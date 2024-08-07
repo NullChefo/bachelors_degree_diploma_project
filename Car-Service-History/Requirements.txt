@@ -1,0 +1,28 @@
+															EN
+
+It is necessary to create a web application in the language of your choice (there are no requirements in what you have chosen). Coursework is handed in in person on the exam date or during the final exercise. All coursework must be uploaded to the classroom.
+
+To create an application for keeping car service history. It should contain the following features:
+
+Add car (name, make, model, year, registration number)
+Editing a car
+Delete a car.
+
+For each of the cars added, you should be able to add the following:
+
+Add an event - (date, kilometers traveled by the car, text, periodic event - yes or no, next date of the event, after how many km. it should happen again)
+example:
+
+Date: 13.09.2022
+Kilometers: 132,234km
+Text: Gearbox oil change
+Recurring event: yes
+Next date: 13.09. 2023
+Next change after: 15,000km
+
+There also needs to be an option to edit and delete events.
+
+
+A page showing the entire service history of a selected car should also be made.
+All data must be recorded in a relational database (of the student's choice).
+

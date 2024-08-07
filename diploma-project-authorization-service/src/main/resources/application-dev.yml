@@ -1,0 +1,161 @@
+server:
+  port: 9000
+  shutdown: graceful
+  error:
+    include-message: always
+    #  TODO make it false
+    include-exception: true
+    include-stacktrace: always
+    whitelabel:
+      enabled: on
+  servlet:
+    session:
+      cookie:
+        # lax
+        same-site: lax
+        secure: false
+
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      # TODO
+      password:
+      username:
+  application:
+    name: authorization-service
+  devtools:
+    livereload:
+      port: 35730
+  output.ansi.enabled: ALWAYS
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/diploma-project
+    username: postgres
+    password: rootpassword
+  rabbitmq:
+    addresses: 127.0.0.1
+    port: 15672
+    username: user
+    password: password
+    # host: 127.0.0.1
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  flyway:
+    enabled: false
+
+  # Security
+  security:
+    oauth2:
+      client:
+        registration:
+          apple-idp:
+            provider: apple
+            client-id: ${APPLE_CLIENT_ID:apple-client-id}
+            client-secret: ${APPLE_CLIENT_SECRET:apple-client-secret}
+            client-authentication-method: post
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/api/login/oauth2/code/{registrationId}"
+            scope: openid,name,email
+            client-name: Apple
+          google-idp:
+            provider: google
+            client-id: ${GOOGLE_CLIENT_ID:google-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:google-client-secret}
+            scope: openid, https://www.googleapis.com/auth/userinfo.profile, https://www.googleapis.com/auth/userinfo.email
+            client-name: Sign in with Google
+          github-idp:
+            provider: github
+            client-id: ${GITHUB_CLIENT_ID:github-client-id}
+            client-secret: ${GITHUB_CLIENT_SECRET:github-client-secret}
+            scope: user:email, read:user
+            client-name: Sign in with GitHub
+          facebook-idp:
+            provider: facebook
+            clientId: ${FACEBOOK_CLIENT_ID:facebook-client-id}
+            clientSecret: ${FACEBOOK_CLIENT_SECRET:facebook-client-secret}
+            scope:
+              - email
+              - public_profile
+            client-name: Sign in with Facebook
+        provider:
+          google:
+            user-name-attribute: email
+          github:
+            user-name-attribute: login
+          apple:
+            authorization-uri: https://appleid.apple.com/auth/authorize?response_mode=form_post
+            token-uri: https://appleid.apple.com/auth/token
+            jwk-set-uri: https://appleid.apple.com/auth/keys
+            user-name-attribute: sub
+          facebook:
+            user-name-attribute: email
+
+
+logging:
+  level:
+    blog: WARN
+    root: INFO
+    org:
+      springframework:
+        web: INFO
+        security: INFO
+        oauth2: INFO
+
+management:
+  # server:
+  # actuator port
+  #  port: 9100
+  #  server:
+  #    port: 8081
+  #    ssl:
+  #      enabled: false
+
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL:"http://localhost:9411"}
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        all: true
+        http.server.requests: true
+  tracing:
+    sampling:
+      probability: 1.0
+  prometheus:
+    metrics:
+      export:
+        step: 3s
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+springdoc:
+  api-docs:
+    path: /v1/api-docs #these urls will used to load the swagger ui of this service by the api gateway
+  swagger-ui:
+    path: /swagger-ui.html
+
+address:
+  frontEnd:
+    baseURL: http://localhost:4200
+    successfullyLogOut: http://localhost:4200/auth/logged-out
+
+

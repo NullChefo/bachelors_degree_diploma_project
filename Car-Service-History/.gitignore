@@ -1,0 +1,11 @@
+./car-service-be/docker-compose-*.yml
+
+./car-service-be/k8s/mail-send/secret-mail-credentials.yaml
+/car-service-be/k8s/mail-send/secret-mail-credentials.yaml
+
+
+/Get_them_out/
+.DS_Store
+
+*/.DS_Store
+.idea

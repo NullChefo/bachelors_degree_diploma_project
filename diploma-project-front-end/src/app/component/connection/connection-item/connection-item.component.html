@@ -1,0 +1,17 @@
+<div [id]="connection.id">
+
+  <div>
+    <button (click)="deleteConnection(connection.id)"> Remove connection</button>
+  </div>
+
+  <div *ngIf="connection.accepted == false">
+    <button (click)="acceptConnection(connection.id)">Accept connection</button>
+  </div>
+
+  <p>{{connection.connection?.avatarURL}}</p>
+  <p>{{connection.connection?.firstName}}</p>
+  <p>{{connection.connection?.lastName}}</p>
+  <p>{{connection.connection?.username}}</p>
+  <p>{{connection.connectionDate}}</p>
+
+</div>

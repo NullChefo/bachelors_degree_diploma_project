@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zipkin
+  namespace: monitoring
+  labels:
+    app: zipkin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zipkin
+  template:
+    metadata:
+      labels:
+        app: zipkin
+    spec:
+      containers:
+        - name: zipkin
+          image: openzipkin/zipkin:2
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "32Mi"
+            #              cpu: "100m"
+            limits:
+              memory: "256Mi"
+          #              cpu: "1000m"
+          ports:
+            - containerPort: 9411
+          envFrom:
+            - configMapRef:
+                name: zipkin-configmap
+            - secretRef:
+                name: zipkin-secret

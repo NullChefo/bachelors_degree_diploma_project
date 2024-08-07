@@ -1,0 +1,85 @@
+server:
+  port: 8083
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: mail-send-service
+  devtools:
+    livereload:
+      port: 35730
+  #  output.ansi.enabled: ALWAYS
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/diploma-project
+    username: postgres
+    password: rootpassword
+  rabbitmq:
+    addresses: 127.0.0.1
+    port: 15672
+    username: user
+    password: password
+    # host: 127.0.0.1
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  flyway:
+    enabled: false
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9000
+
+  # TODO ADD YOUR EMAIL CREDENTIALS
+  mail:
+    host: ${MAIL_HOST:host}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:username}
+    password: ${MAIL_PASSWORD:password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        ssl:
+          protocols: TLSv1.2
+        starttls:
+          enable: true
+    default-encoding: UTF-8
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL:http://localhost:9411}
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+rabbitmq:
+  queue:
+    name: mail-send-queue
+  exchange:
+    name: mail-send-exchange
+  routing:
+    key: mail-send-routing-key
+
+project:
+  name: "Diploma Project"
+
+springdoc:
+  api-docs:
+    path: "/docs/api"
+  swagger-ui:
+    path: "/swagger-ui.html"

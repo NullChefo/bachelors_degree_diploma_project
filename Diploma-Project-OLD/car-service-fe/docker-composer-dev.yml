@@ -1,0 +1,10 @@
+version: "3.3"
+
+services:
+  car-service-ui_release:
+    container_name: car-service-ui_release_1
+    image: ${container_registry}/car-service-ui:release
+    network_mode: "host"
+    ports:
+      - 3023:3023
+    command: dev

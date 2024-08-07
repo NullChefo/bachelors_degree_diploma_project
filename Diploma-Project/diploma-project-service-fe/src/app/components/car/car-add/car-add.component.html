@@ -1,0 +1,101 @@
+<div class="flex">
+    <app-left-panel></app-left-panel>
+    <div class="flex  flex-col m-6 flex-1">
+        <div class="flex mb-5 justify-center items-center ">
+        <div  class="flex  flex-col justify-center  text-white bg-gray-800 shadow-2xl shadow-amber-700 md:w-[30rem] w-[20rem] mr-3 ml-3 rounded-3xl">
+            <div class="flex justify-center pt-5 text-5xl">
+              <h1 class=""> {{carId ? "Edit" : "Add"}} car </h1>
+            </div>
+        
+            <form #form="ngForm" (submit)="submit()" (keydown.enter)="submit()">
+        
+              <div class="flex flex-col m-10">
+        
+                <div class=" flex flex-col ">
+        
+        
+                  <div *ngIf="error " class="mb-3">
+                    <div class="  rounded-lg  text-red-500 ">
+                      <div [innerHTML]="error"></div>
+                    </div>
+                  </div>
+        
+        
+                  <div class=" flex flex-col  " >
+        
+                    <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 mt-4">
+                      Name</label>
+                    <input type="text" name="name" id="name"
+                      class=" rounded-md  p-1 pl-3   {{isNameValid ? 'text-black'  : 'text-red-500 border-red-500' }} " 
+                      placeholder="Name" required [(ngModel)]="car.name" #name="ngModel">
+                      <p class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isNameValid ? 'hidden' : '' }} " > Enter valid name</p>
+    
+
+                      <label for="manufacturer" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 mt-4">
+                        Manufacturer</label>
+                      <input type="text" name="manufacturer" id="manufacturer"
+                        class=" rounded-md  p-1 pl-3   {{isManufacturerValid ? 'text-black'  : 'text-red-500 border-red-500' }} " 
+                        placeholder="Manufacturer" required [(ngModel)]="car.manufacturer" #name="ngModel">
+                        <p class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isManufacturerValid ? 'hidden' : '' }} " > Enter valid manufacturer</p>
+    
+
+
+                        <label for="model" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 mt-4">
+                            Model</label>
+                          <input type="text" name="model" id="model"
+                            class=" rounded-md  p-1 pl-3   {{isModelValid ? 'text-black'  : 'text-red-500 border-red-500' }} " 
+                            placeholder="Model" required [(ngModel)]="car.model" #name="ngModel">
+                            <p class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isModelValid ? 'hidden' : '' }} " > Enter valid model</p>
+    
+
+                            <label for="year" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 mt-4">
+                                Year</label>
+                              <input type="text" name="year" id="year"
+                                class=" rounded-md  p-1 pl-3   {{isYearValid ? 'text-black'  : 'text-red-500 border-red-500' }} " 
+                                placeholder="Year" required [(ngModel)]="car.year" #name="ngModel">
+                                <p class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isYearValid ? 'hidden' : '' }} " > Enter valid year</p>
+
+
+                            <label for="plateNumber" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 mt-4">
+                                Plate number</label>
+                              <input type="text" name="plateNumber" id="plateNumber"
+                                class=" rounded-md  p-1 pl-3   {{isPlateNumberValid ? 'text-black'  : 'text-red-500 border-red-500' }} " 
+                                placeholder="Plate number" required [(ngModel)]="car.plateNumber" #name="ngModel">
+                                <p class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isPlateNumberValid ? 'hidden' : '' }} " > Enter valid plate number</p>
+    
+
+
+
+                      
+                    <div class="flex justify-center p-8 ">
+                      <button type="button" class="bg-amber-600 w-28 rounded-lg text-2xl p-2" (click)="submit()">Submit</button>
+        
+        
+                    </div>
+        
+                  </div>
+        
+            
+    
+                </div>
+        
+            
+        
+        
+        
+              </div>
+        
+            </form>
+        
+        
+        
+          </div>
+
+        </div>
+
+
+    </div>
+
+
+    </div>
+    

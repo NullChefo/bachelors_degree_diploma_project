@@ -1,0 +1,16 @@
+<div>
+  <div *ngIf="groups.length == 0">
+    <p>Not joined in a group! Find new </p>
+  </div>
+
+  <div *ngIf="groups.length > 0">
+
+    <div *ngFor="let group of groups">
+      <app-group-list [groups]="groups"></app-group-list>
+
+    </div>
+
+  </div>
+
+
+</div>

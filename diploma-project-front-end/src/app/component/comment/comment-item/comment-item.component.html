@@ -1,0 +1,32 @@
+<div [id]="comment.id" class="p-4">
+
+
+  <div class="flex justify-between">
+
+
+    <div class="flex">
+      <ng-container *ngIf="comment.creator?.avatarURL">
+        <img [src]="comment.creator?.avatarURL" class=" rounded-full border w-[40px] h-[40px]">
+      </ng-container>
+
+      <ng-container *ngIf="!comment.creator?.avatarURL">
+        <img class=" rounded-full border w-[40px] h-[40px]" src="./assets/default_user.png">
+      </ng-container>
+
+
+      <p class="break-all"> {{comment.content}}</p>
+    </div>
+
+
+    <p>{{createdFromNow}} ago</p>
+
+
+  </div>
+
+
+  <div *ngIf="comment.creator?.username == username" class="flex space-x-2">
+    <button>Edit</button>
+    <button>Delete</button>
+  </div>
+
+</div>

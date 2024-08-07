@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolume # Create PV
+metadata:
+  name: rabbitmq-volume # Sets PV name
+  labels:
+    type: local # Sets PV's type
+    app: rabbitmq
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi # Sets PV's size
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/rabbitmq" # Sets PV's host path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim # Create PVC
+metadata:
+  name: rabbitmq-volume-claim # Sets PVC's name
+  labels:
+    app: rabbitmq # Defines app to create PVC for
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi # Sets PVC's size

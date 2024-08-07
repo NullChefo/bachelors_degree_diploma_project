@@ -1,0 +1,57 @@
+<div class="flex space-x-10">
+
+
+  <div class="flex">
+    <div *ngIf="groups.length > 0">
+      <app-group-list [groups]="groups"></app-group-list>
+    </div>
+
+    <div *ngIf="chats.length == 0">
+
+      <p>
+        No groups found. Start now by finding more group!
+      </p>
+
+    </div>
+
+
+  </div>
+
+
+  <div class="flex flex-1">
+    <div *ngIf="chats.length > 0">
+      <app-chat-list [chats]="chats"></app-chat-list>
+      <p>Chats are active</p>
+    </div>
+
+    <div *ngIf="chats.length == 0">
+
+      <p>
+        No chats found. Start now by finding someone to chat!
+      </p>
+
+    </div>
+  </div>
+
+
+  <div class="flex">
+    <div *ngIf="connections.length > 0">
+      <app-connection-list [connections]="connections"></app-connection-list>
+
+    </div>
+
+    <div *ngIf="connections.length == 0">
+
+
+      <p>
+        No connections found. Start now by finding more connections!
+      </p>
+
+
+    </div>
+
+
+  </div>
+
+
+</div>

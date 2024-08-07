@@ -1,0 +1,112 @@
+<div class="flex">
+    <app-left-panel></app-left-panel>
+
+    <div class="flex flex-col m-6 flex-1 ">
+
+        <div class="flex mb-5 justify-center font-serif text-black">
+            <h1 class=" text-6xl ">
+                {{carId ? "Events for car id: " + carId : " All events (Admin tool)"}}
+            </h1>
+        </div>
+
+        <div class="flex mb-5  ml-2 font-bold text-red-500 {{error ? ''  : 'hidden' }}">
+            <h2 [innerHTML]="error">
+            </h2>
+
+        </div>
+
+        <div class="overflow-x-auto relative  sm:rounded-lg">
+            <table class="w-full text-sm text-left  text-dark">
+                <thead class="text-xs  uppercase  bg-amber-700 text-dark">
+                    <tr>
+                        <th scope="col" class="py-3 px-6 text-center">
+                            Car Id
+                        </th>
+                        <th scope="col" class="py-3 px-6 text-center">
+                            Body
+                        </th>
+
+                        <th scope="col" class="py-3 px-6 text-center">
+                            Current mileage
+                        </th>
+
+                        <th scope="col" class="py-3 px-6 text-center ">
+                            Change after mileage
+                        </th>
+
+                        <th scope="col" class="py-3 px-6 text-center">
+                            Date
+                        </th>
+                        <th scope="col" class="py-3 px-6 text-center">
+                            Next Date
+                        </th>
+
+
+                        <th scope="col" class="py-3 px-6 text-center">
+                            Is it periodic
+                        </th>
+
+                        <th scope="col" class="py-3 px-6 text-center">
+                            Actions
+                        </th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr class="bg-amber-600  text-white " *ngIf="!events || error == 'No event for this car!' ">
+
+                        <th scope="row" colspan="8"
+                            class="py-4 px-6 text-center font-medium  whitespace-nowrap bg-slate-400 ">
+                            No events found
+                        </th>
+
+                    </tr>
+
+                    <tr class="bg-amber-600  text-white" *ngFor="let event of events">
+
+                        <th scope="row" class="py-4 px-6 font-medium  whitespace-nowrap  text-center">
+                            {{event.carId}}
+                        </th>
+
+                        <td class="py-4 px-6  text-center">
+                            {{event.body}}
+                        </td>
+
+                        <td class="py-4 px-6  text-center">
+                            {{event.currentMileage}}
+                        </td>
+
+                        <td class="py-4 px-6  text-center">
+                            {{ event.changeAfterMileage}}
+                        </td>
+
+                        <th scope="row" class="py-4 px-6 font-medium   text-center ">
+                            {{event.date | date : "dd/MM/yyyy"}}
+                        </th>
+
+                        <td class="py-4 px-6  text-center">
+                            {{event.nextDate | date : "dd/MM/yyyy"}}
+                        </td>
+
+                        <td class="py-4 px-6  text-center">
+                            <input type="checkbox" [checked]="event.periodicEvent" disabled>
+                        </td>
+
+                        <td class="py-4 px-6 space-x-4 text-center">
+                            <button (click)="editEvent(event.id)"
+                                class="font-medium  text-white hover:underline  text-center">Edit</button>
+                            <button (click)="deleteEvent(event)"
+                                class="font-medium  text-white hover:underline  text-center">Delete</button>
+                        </td>
+
+                    </tr>
+
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

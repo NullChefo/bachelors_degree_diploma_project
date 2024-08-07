@@ -1,0 +1,119 @@
+server:
+  port: 8084
+  shutdown: graceful
+  error:
+    include-message: always
+    include-exception: true # TODO make it false
+
+spring:
+  application:
+    name: mail-process-service
+  output.ansi.enabled: ALWAYS
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://127.0.0.1:5432/diploma-project}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:rootpassword}
+  rabbitmq:
+    addresses: ${RABBITMQ_ADDRESS:127.0.0.1}
+    port: ${RABBITMQ_POST:15672}
+    username: ${RABBITMQ_USERNAME:user}
+    password: ${RABBITMQ_PASSWORD:password}
+    # host: 127.0.0.1
+  jpa:
+    hibernate:
+      # TODO make validate
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+    # TODO make true
+  flyway:
+    enabled: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTHORIZATION_SERVER_ISSUER_URL:http://authorization:9000}
+          jwk-set-uri: ${AUTHORIZATION_SERVER_URL:http://authorization:9000}/oauth2/jwks
+
+management:
+  server:
+    # actuator port
+    port: 8184
+  #  server:
+  #    port: 8081
+  #    ssl:
+  #      enabled: false
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL:"http://localhost:9411"}
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        all: true
+        http.server.requests: true
+  tracing:
+    sampling:
+      probability: 1.0
+  prometheus:
+    metrics:
+      export:
+        step: 3s
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+
+
+flyway:
+  enabled: false
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+## Only for debugging purposes
+#  level:
+#    root: INFO
+#    org.springframework.web: TRACE
+#    org.springframework.security: TRACE
+#    org.springframework.security.oauth2: TRACE
+#    org.springframework.cloud.gateway: TRACE
+#    org.springframework.security.jwt: TRACE
+
+
+rabbitmq:
+  queue:
+    name: mail-process-queue
+  exchange:
+    name: mail-process-exchange
+  routing:
+    key: mail-process-routing-key
+
+mail:
+  send:
+    exchange: mail-send-exchange
+  routing:
+    key: mail-send-routing-key
+
+springdoc:
+  api-docs:
+    path: /v1/api-docs #these urls will used to load the swagger ui of this service by the api gateway
+  swagger-ui:
+    path: /swagger-ui.html
+    oauth:
+      use-pkce-with-authorization-code-grant: true
+      client-id: swagger-client

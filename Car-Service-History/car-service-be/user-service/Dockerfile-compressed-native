@@ -1,0 +1,73 @@
+
+
+ARG VERSION=3.8.6
+ARG MAVER_FULL_VERSION=apache-maven-${VERSION}
+ARG SERVICE_NAME=user-service
+
+
+
+FROM ghcr.io/graalvm/graalvm-ce:22.3.0 AS build-aot
+
+RUN gu install native-image
+
+ARG MAVER_FULL_VERSION
+ARG VERSION
+
+# RUN microdnf update -y
+
+RUN microdnf install wget -y
+RUN wget https://dlcdn.apache.org/maven/maven-3/${VERSION}/binaries/${MAVER_FULL_VERSION}-bin.tar.gz -P /tmp
+RUN tar xf /tmp/${MAVER_FULL_VERSION}-bin.tar.gz -C /opt
+RUN ln -s /opt/${MAVER_FULL_VERSION} /opt/maven
+
+
+ENV M2_HOME=/opt/maven
+ENV MAVEN_HOME=/opt/maven
+ENV PATH=${M2_HOME}/bin:${PATH}
+ENV PATH=${JAVA_HOME}/bin:${PATH}
+
+# change if needed
+ENV MAVEN_OPTS='-Xmx6g'
+
+
+# copy the pom
+COPY ./pom.xml ./pom.xml
+
+# get the dependencies
+RUN mvn dependency:go-offline -B
+
+# copy other files
+COPY src ./src/
+
+# TODO remove skip test
+RUN mvn -Dmaven.test.skip=true -Pnative native:compile
+
+
+FROM ubuntu:latest as compress
+
+ARG SERVICE_NAME
+
+RUN  apt-get update -y
+
+RUN  apt-get install -y upx
+
+WORKDIR /home
+
+COPY --chmod=0755  --from=build-aot /app/target/${SERVICE_NAME} .
+
+RUN upx --lzma --best /home/${SERVICE_NAME} -o /home/${SERVICE_NAME}.upx
+
+FROM alpine:latest
+
+ARG SERVICE_NAME
+
+EXPOSE 8080
+
+COPY --chmod=0755  --from=compress /home/${SERVICE_NAME}.upx /home/
+
+ENTRYPOINT ["/home/${SERVICE_NAME}.upx"]
+
+
+
+
+

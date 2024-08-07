@@ -1,0 +1,19 @@
+<div>
+
+  <div *ngIf="chats.length > 0">
+
+    <div *ngFor="let chat of chats">
+      <app-chat-item [chat]="chat"></app-chat-item>
+    </div>
+  </div>
+
+  <div *ngIf="chats.length > 0">
+
+    <p>
+      No chats found. Start now by finding someone to chat!
+    </p>
+
+  </div>
+
+
+</div>

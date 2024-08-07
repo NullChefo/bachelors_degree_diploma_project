@@ -1,0 +1,14 @@
+<ng-container>
+
+  <button (click)="this.loadComments()" mat-raised-button>
+    <ng-container *ngIf="isCommented">
+      <fa-icon
+        [icon]="faCommentFilled" class=" text-blue-700"></fa-icon>
+    </ng-container>
+    <ng-container *ngIf="!isCommented">
+      <fa-icon [icon]="faCommentEmpty"
+               class=" text-blue-700"></fa-icon>
+    </ng-container>
+    {{commentCount}}</button>
+
+</ng-container>

@@ -1,0 +1,31 @@
+<div class="flex  justify-center pt-14">
+
+  <!-- flex-1 to take all the space of the container   TODO make a braking point and make it larger when goes bellow that   -->
+  <div
+    class="flex  flex-col text-white bg-gray-800 shadow-2xl shadow-amber-700 md:w-[30rem] w-[20rem] mr-3 ml-3 rounded-3xl">
+
+
+    <div class="flex justify-center pt-5 text-5xl items-center text-center">
+      <h1>Thanks for your registration</h1>
+    </div>
+
+
+    <div class="flex justify-center  items-center text-9xl mt-10">
+      <fa-icon [icon]="faEnvelope"></fa-icon>
+    </div>
+
+    <div class="flex p-10">
+      <p>Your account has been created and a verification email has been sent
+        to your registered email address. Please click on the verification link
+        included in the email to activate your account.</p>
+    </div>
+
+    <div class="flex justify-center items-center mb-10 underline underline-offset-4 font-bold">
+      <button (click)="logIn()">
+        <a> Back to login </a>
+      </button>
+    </div>
+
+  </div>
+
+</div>

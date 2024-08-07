@@ -1,0 +1,48 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: front-end-ingress
+  annotations:
+    #  nginx.ingress.kubernetes.io/rewrite-target: /
+    # nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    # nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    # nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    #  nginx.ingress.kubernetes.io/rewrite-target: /$1
+    # nginx.ingress.kubernetes.io/use-regex: "true"
+
+
+
+
+    #  nginx.ingress.kubernetes.io/rewrite-target: /$1
+    #  nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "200m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/add-base-url: "true"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-max-temp-file-size: "1024m"
+
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+
+
+  #  nginx.ingress.kubernetes.io/cors-allow-credentials: 'true'
+  #  nginx.ingress.kubernetes.io/cors-allow-methods: '*'
+  #  nginx.ingress.kubernetes.io/cors-allow-origin: '*'
+  #  nginx.ingress.kubernetes.io/enable-cors: 'true'
+
+
+spec:
+  ingressClassName: public
+  rules:
+    - host: diploma-project.nullchefo.com
+      http:
+        paths:
+          #        - path: /*
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: front-end
+                port:
+                  number: 80

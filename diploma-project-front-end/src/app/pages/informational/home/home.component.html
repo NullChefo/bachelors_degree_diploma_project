@@ -1,0 +1,43 @@
+<div class="space-y-4 ml-[20vw] mr-[20vw] mt-[5vh] mb-[2vh] text-justify">
+
+  <h1>Welcome to {{projectName}}!</h1>
+
+
+  <p>Discover, Connect, and Excel in the world of higher education. {{projectName}} is the ultimate social
+    media platform designed exclusively for students and universities.
+    Join our vibrant community to connect with like-minded individuals, stay updated with the latest campus news,
+    and unlock endless opportunities for academic and personal growth.</p>
+
+
+  <h2> Features:</h2>
+
+  <div>Student Profiles: Create your personalized profile to showcase your interests, achievements, and aspirations.
+    Connect with fellow students, form study groups, and expand your network.
+  </div>
+
+
+  <div>University Pages: Explore a diverse range of university profiles. Learn about their programs, admission
+    requirements, campus facilities, and student life. Follow your dream universities to stay updated on events and
+    important announcements.
+  </div>
+
+  <div>Join {{projectName}} today and embark on an exciting journey of academic exploration, personal growth, and
+    lifelong connections. Together, let's shape the future of education!
+  </div>
+
+  <div>News and Events: Stay in the loop with the latest news and events from universities around the world. Get
+    updates on seminars, workshops, job fairs, and campus activities. Never miss an opportunity to enhance your
+    academic journey.
+  </div>
+
+  <div>Discussion Forums: Engage in meaningful conversations on our discussion forums. Seek advice, share insights,
+    and connect with students from different universities. Explore various topics such as career guidance, study
+    tips, research opportunities, and more.
+  </div>
+
+  <ng-container *ngIf="!isUserSignedIn">
+    <div> Sign up now: <a class=" bg-blue-700 text-white px-4 py-2 rounded-lg  "
+                          routerLink="/auth/register">Sign-up</a></div>
+  </ng-container>
+
+</div>

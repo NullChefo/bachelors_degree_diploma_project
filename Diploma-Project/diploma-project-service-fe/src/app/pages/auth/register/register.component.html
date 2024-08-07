@@ -1,0 +1,136 @@
+<div class="flex  justify-center pt-14">
+
+  <!-- flex-1 to take all the space of the container   TODO make a braking point and make it larger when goes bellow that   -->
+  <div
+    class="flex  flex-col text-white bg-gray-800 shadow-2xl shadow-amber-700 md:w-[30rem] w-[20rem] mr-3 ml-3 rounded-3xl">
+
+
+    <div class="flex justify-center pt-5 text-5xl">
+      <h1 class="">Register</h1>
+    </div>
+
+
+    <form #form="ngForm" (submit)="register()" (keydown.enter)="register()">
+
+      <div class="flex flex-col m-10">
+
+        <div class=" flex flex-col ">
+
+
+          <div *ngIf="error " class="mb-3">
+            <div class="  rounded-lg  text-red-500 ">
+              <!-- innerHTML very powerful -->
+              <div [innerHTML]="error"></div>
+            </div>
+            </div>
+            
+            <label for="firstName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 ">First
+              Name *</label>
+            <input type="text" id="firstName" name="firstName" class=" rounded-md {{isFirstNameValid ? 'text-black'  : 'text-red-500 border-red-500' }} border  p-1 pl-3 "
+              placeholder="First name" required [(ngModel)]="userRegisterDTO.firstName" #name="ngModel">
+              <p class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isFirstNameValid ? 'hidden' : '' }} " > Enter valid first name!  Max length 50 chars</p>
+
+
+            <label for="lastName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 mt-4">Last
+              Name *</label>
+            <input type="text" id="lastName" name="lastName" class=" rounded-md {{isLastNameValid ? 'text-black'  : 'text-red-500 border-red-500' }} border  p-1 pl-3 "
+              placeholder="Last name" required [(ngModel)]="userRegisterDTO.lastName" #name="ngModel">
+              <p class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isLastNameValid ? 'hidden' : '' }} " > Enter valid last name! Max length 50 chars</p>
+
+
+            <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 mt-4">Username *
+            </label>
+            <input type="text" id="username" name="username" class=" rounded-md {{isUsernameValid ? 'text-black'  : 'text-red-500 border-red-500' }} border  p-1 pl-3 "
+              placeholder="Username" required [(ngModel)]="userRegisterDTO.username" #name="ngModel">
+              <p class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isUsernameValid ? 'hidden' : '' }} " > Enter valid username! Max length 50 chars</p>
+
+
+
+
+            <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 mt-4">Your
+              Email *</label>
+            <input type="email" name="email" id="email" class=" rounded-md  p-1 pl-3 {{isMailValid ? 'text-black'  : 'text-red-500 border-red-500' }}"
+              placeholder="example@example.com" required [(ngModel)]="userRegisterDTO.email" #name="ngModel">
+              <p class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isMailValid ? 'hidden' : '' }} " > Enter valid mail! Minium length 3 chars! Use this format: example@examble.com </p>
+
+
+
+            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 mt-4">Your
+              Password *</label>
+            <input type="password" id="password" name="password" class=" rounded-md {{isPasswordValid ? 'text-black'  : 'text-red-500 border-red-500' }} border  p-1 pl-3 "
+              placeholder="Password" required [(ngModel)]="userRegisterDTO.password" #name="ngModel">
+              <p class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isPasswordValid ? 'hidden' : '' }} " > Enter valid password!</p>
+
+
+
+            <label for="matchingPassword"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 mt-4">Match your Password *</label>
+            <input type="password" id="matchingPassword" name="matchingPassword"
+              class=" rounded-md {{isMatchingPasswordValid && isPasswordsMatching  ? 'text-black'  : 'text-red-500 border-red-500' }} border p-1 pl-3 " placeholder="Matching password" required
+              [(ngModel)]="userRegisterDTO.matchingPassword" #name="ngModel">
+              <p class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isMatchingPasswordValid ? 'hidden' : '' }} " > Enter valid matching password!</p>
+              <p class="block mb-2 text-sm font-medium text-red-400 pl-1  {{isPasswordsMatching ? 'hidden' : '' }} " > Your password doesn't match!</p>
+
+
+
+            <div class="flex items-center justify-start mt-4">
+              <input type="checkbox" t id="signedForAnnouncements" name="signedForAnnouncements"
+                class=" rounded-md text-black border"
+                [(ngModel)]="userRegisterDTO.signedForAnnouncements" #name="ngModel">
+              <label for="signedForAnnouncements"
+                class=" block ml-4 text-lg font-medium text-gray-900 dark:text-gray-300 "> Receive announcements
+              </label>
+            </div>
+
+            <div class="flex items-center justify-start">
+              <input type="checkbox" t id="signedForNotifications" name="signedForNotifications"
+                class=" rounded-md text-black border  " 
+                [(ngModel)]="userRegisterDTO.signedForNotifications" #name="ngModel">
+              <label for="signedForNotifications"
+                class=" block ml-4 text-lg font-medium text-gray-900 dark:text-gray-300 "> Receive notifications
+              </label>
+            </div>
+
+            <div class="flex items-center justify-start">
+              <input type="checkbox" t id="signedForPromotions" name="signedForPromotions"
+                class=" rounded-md text-black border  "
+                [(ngModel)]="userRegisterDTO.signedForPromotions" #name="ngModel">
+              <label for="signedForPromotions"
+                class=" block ml-4 text-lg font-medium text-gray-900 dark:text-gray-300 "> Receive promotions </label>
+            </div>
+
+
+
+            <div class="flex justify-center p-8 ">
+              <button type="button" class="bg-amber-600 w-28 rounded-lg text-2xl p-2" (click)="register()">Submit</button>
+
+
+            </div>
+
+
+          </div>
+
+          <div class="divide-amber-400 divide-y pt-5 ">
+            <div></div>
+            <div></div>
+          </div>
+
+
+          <div class="flex justify-center items-center pt-10">
+            <div>Already have an account? <a routerLink="/user/login" class=" font-bold">Login now</a></div>
+
+          </div>
+
+
+
+
+
+        </div>
+
+    </form>
+
+
+
+  </div>
+
+</div>

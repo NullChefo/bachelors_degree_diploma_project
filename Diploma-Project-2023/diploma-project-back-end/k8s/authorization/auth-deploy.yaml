@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authorization
+  labels:
+    app: authorization
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authorization
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 10
+  template:
+    metadata:
+      labels:
+        app: authorization
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9100"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+        - name: authorization
+          image: ghcr.io/nullchefo/diploma-project-authorization-service:0.0.1-SNAPSHOT
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "150Mi"
+            limits:
+              memory: "1024Mi"
+          ports:
+            - containerPort: 9000
+            - containerPort: 9100
+          envFrom:
+            - configMapRef:
+                name: authorization-configmap
+            - secretRef:
+                name: authorization-secret

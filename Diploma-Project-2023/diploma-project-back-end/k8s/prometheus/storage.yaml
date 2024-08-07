@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume # Create PV
+metadata:
+  name: prometheus-volume # Sets PV name
+  namespace: monitoring
+  labels:
+    type: local # Sets PV's type
+    app: prometheus
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 3Gi # Sets PV's size
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/prometheus" # Sets PV's host path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim # Create PVC
+metadata:
+  name: prometheus-volume-claim # Sets PVC's name
+  labels:
+    app: prometheus # Defines app to create PVC for
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi # Sets PVC's size

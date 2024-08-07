@@ -1,0 +1,85 @@
+server:
+  port: 8082
+  shutdown: graceful
+  error:
+    include-message: always
+    # TODO make it false
+    include-exception: true
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      # TODO
+      password:
+      username:
+
+
+  application:
+    name: user-service
+  devtools:
+    livereload:
+      port: 35730
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/dev-users
+    username: postgres
+    password: rootpassword
+  rabbitmq:
+    addresses: 127.0.0.1
+    port: 15672
+    username: user
+    password: password
+  jpa:
+    hibernate:
+      # TODO make validate
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  flyway:
+    # TODO make true
+    enabled: false
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9000
+
+
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+rabbitmq:
+  queue:
+    name: mail-process-queue
+  exchange:
+    name: mail-process-exchange
+  routing:
+    key: mail-process-routing-key
+
+frontEnd:
+  # TODO change for prod
+  url: http://localhost:4200
+
+env:
+  prod: false
+
+services-list:
+  auth-service: "http://localhost:9002"
+  mail-process-service: "http://localhost:9004"
+  mail-send-service: "http://localhost:9005"
+  car-history-service: "http://localhost:9006"
+
+

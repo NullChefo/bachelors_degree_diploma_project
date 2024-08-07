@@ -1,0 +1,127 @@
+<div class="flex">
+  <app-left-panel></app-left-panel>
+  <div class="flex  flex-col m-6 flex-1 ">
+
+
+
+
+    <div class="flex mb-5 justify-center items-center  " *ngIf="isFormLegible">
+
+      <div
+        class="flex  flex-col justify-center  text-white bg-gray-800 shadow-2xl shadow-amber-700 md:w-[30rem] w-[20rem] mr-3 ml-3 rounded-3xl">
+
+
+        <div class="flex justify-center pt-5 text-5xl">
+          <h1 class=""> {{carId ? "Add" : "Edit"}} event </h1>
+        </div>
+
+        <form #form="ngForm" (submit)="submit()" (keydown.enter)="submit()">
+
+          <div class="flex flex-col m-10">
+
+            <div class=" flex flex-col ">
+
+
+              <div *ngIf="error " class="mb-3">
+                <div class="  rounded-lg  text-red-500 ">
+                  <div [innerHTML]="error"></div>
+                </div>
+              </div>
+
+
+              <div class=" flex flex-col  ">
+
+                <label for="currentDate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 mt-4">
+                  Date </label>
+                <input type="date" name="currentDate" id="currentDate"
+                  class=" rounded-md  p-1 pl-3   {{isDateValid ? 'text-black'  : 'text-red-500 border-red-500' }} "
+                  placeholder="YYYY/MM/DD" required [(ngModel)]="date" #name="ngModel">
+                <p class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isDateValid ? 'hidden' : '' }} ">
+                  Enter valid date</p>
+
+
+                <label for="currentMileage"
+                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 mt-4">
+                  Current Mileage</label>
+                <input type="text" name="currentMileage" id="currentMileage"
+                  class=" rounded-md  p-1 pl-3   {{isCurrentMileage ? 'text-black'  : 'text-red-500 border-red-500' }} "
+                  placeholder="Current Mileage" required [(ngModel)]="event.currentMileage" #name="ngModel">
+                <p
+                  class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isCurrentMileage ? 'hidden' : '' }} ">
+                  Enter valid manufacturer</p>
+
+
+
+                <label for="body" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 mt-4">
+                  Body</label>
+                <input type="text" name="body" id="body"
+                  class=" rounded-md  p-1 pl-3   {{isBodValid ? 'text-black'  : 'text-red-500 border-red-500' }} "
+                  placeholder="Body" required [(ngModel)]="event.body" #name="ngModel">
+                <p class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isBodValid ? 'hidden' : '' }} ">
+                  Enter valid body</p>
+
+
+                <label for="nextDate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 mt-4">
+                  Next date</label>
+                <input type="date" name="nextDate" id="nextDate"
+                  class=" rounded-md  p-1 pl-3   {{isNextDateValid ? 'text-black'  : 'text-red-500 border-red-500' }} "
+                  placeholder="DD.MM.YYYY" required [value]="nextDate" [(ngModel)]="nextDate" #name="ngModel">
+                <p class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isNextDateValid ? 'hidden' : '' }} ">
+                  Enter valid next date</p>
+                <p class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isDateLater ? 'hidden' : '' }} "> The
+                  next day must be later than the current date</p>
+
+
+                <label for="changeAfterMileage"
+                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300 mt-4">
+                  Change after mileage</label>
+                <input type="text" name="changeAfterMileage" id="changeAfterMileage"
+                  class=" rounded-md  p-1 pl-3   {{isChangeAfterMilageValid ? 'text-black'  : 'text-red-500 border-red-500' }} "
+                  placeholder="Plate number" required [(ngModel)]="event.changeAfterMileage" #name="ngModel">
+                <p
+                  class="block mb-2 text-sm font-medium text-red-400 pl-1 pt-2  {{isChangeAfterMilageValid ? 'hidden' : '' }} ">
+                  Enter mileage</p>
+
+                <div class="flex items-center justify-start mt-3 ml-1">
+                  <input type="checkbox" t id="periodicEvent" name="periodicEvent"
+                    class=" rounded-md text-black border  " [(ngModel)]="event.periodicEvent" #name="ngModel">
+                  <label for="periodicEvent" class=" block ml-4 text-lg font-medium text-gray-900 dark:text-gray-300 ">
+                    Periodic event
+                  </label>
+                </div>
+
+
+
+
+                <div class="flex justify-center p-8 ">
+                  <button type="button" class="bg-amber-600 w-28 rounded-lg text-2xl p-2"
+                    (click)="submit()">Submit</button>
+
+
+                </div>
+
+              </div>
+
+
+
+            </div>
+
+
+
+
+
+          </div>
+
+        </form>
+
+
+
+      </div>
+
+    </div>
+
+
+  </div>
+
+
+</div>

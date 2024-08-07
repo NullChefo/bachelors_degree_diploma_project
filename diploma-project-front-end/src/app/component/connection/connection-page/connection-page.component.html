@@ -1,0 +1,44 @@
+<div>
+
+
+  <div id="accepted">
+
+
+    <div *ngIf="connections.length == 0">
+      <p> No connections found!</p>
+    </div>
+
+
+    <div *ngIf="connections.length > 0">
+      <app-connection-list [connections]="connections"></app-connection-list>
+    </div>
+
+  </div>
+
+
+  <div id="requests">
+
+    <div *ngIf="requestedConnections.length == 0">
+      <p> No connections request found!</p>
+    </div>
+
+    <div *ngIf="requestedConnections.length > 0">
+      <app-connection-list [connections]="connections"></app-connection-list>
+    </div>
+
+
+    <div id="suggestions">
+
+      <div *ngIf="suggestedConnections.length == 0">
+        <p> No suggestions found!</p>
+      </div>
+
+      <div *ngIf="suggestedConnections.length > 0">
+        <app-connection-list [connections]="connections"></app-connection-list>
+      </div>
+
+
+    </div>
+
+
+    <div>

@@ -1,0 +1,30 @@
+name: Build and Push to GitHub Packages
+on:
+  push:
+    branches:
+      - dev
+
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - uses: actions/checkout@v2
+      - name: Build the Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/nullchefo/diploma-project-front-end:latest
+          file: ./Dockerfile
+      - name: Push to GitHub Packages
+        run: |
+          docker tag ghcr.io/nullchefo/diploma-project-front-end:latest ghcr.io/nullchefo/diploma-project-front-end:${{ github.sha }}
+          docker push ghcr.io/nullchefo/diploma-project-front-end:latest
+          docker push ghcr.io/nullchefo/diploma-project-front-end:${{ github.sha }}

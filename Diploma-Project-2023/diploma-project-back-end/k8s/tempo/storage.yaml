@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: PersistentVolume # Create PV
+metadata:
+  name: tempo-volume # Sets PV name
+  namespace: monitoring
+  labels:
+    type: local # Sets PV's type
+    app: tempo
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi # Sets PV's size
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/tempo" # Sets PV's host path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim # Create PVC
+metadata:
+  name: tempo-volume-claim # Sets PVC's name
+  namespace: monitoring
+  labels:
+    app: tempo # Defines app to create PVC for
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi # Sets PVC's size

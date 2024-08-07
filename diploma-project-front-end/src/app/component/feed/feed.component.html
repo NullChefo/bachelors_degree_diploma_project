@@ -1,0 +1,20 @@
+<div>
+
+
+  <app-edit-post (postAdded)="onPostAdded($event)"></app-edit-post>
+
+
+  <div *ngIf="posts.length == 0" class="bg-amber-600  text-white ">
+
+    <p class="py-4 px-6 text-center font-medium  whitespace-nowrap bg-slate-400 " colspan="7"
+       scope="row">
+      No post for you! <a class="underline" routerLink="/groups/search">Join groups </a> or <a class="underline"
+                                                                                               routerLink="/connections/search">make
+      new connections </a>
+    </p>
+
+  </div>
+
+  <app-list-post [posts]="posts"></app-list-post>
+
+</div>

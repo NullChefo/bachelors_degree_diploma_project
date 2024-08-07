@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-configmap
+data:
+  SPRING_PROFILES_ACTIVE: kubernetes
+  SPRING_ZIPKIN_BASE-URL: "http://zipkin:9411"
+  FE_ADDRESS: http://localhost:4200
+

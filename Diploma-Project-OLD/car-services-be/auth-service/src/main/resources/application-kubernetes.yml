@@ -1,0 +1,69 @@
+server:
+  port: 8086
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/diploma_project?createDatabaseIfNotExist=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true
+    username: user
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  rabbitmq:
+    addresses: 127.0.0.1
+    port: 15672
+    username: user
+    password: password
+  zipkin:
+    base-url: http://localhost:9411
+  sleuth:
+    sampler:
+      probability: 1.0
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  cloud:
+    kubernetes:
+      loadbalancer:
+        enabled: true
+        mode: service
+      enabled: false
+    loadbalancer:
+      ribbon:
+        enabled: true
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # TODO *
+        include: prometheus
+
+rabbitmq:
+  queue:
+    name: mail-process-queue
+  exchange:
+    name: mail-process-exchange
+  routing:
+    key: mail-process-routing-key
+
+
+auth:
+  accessTokenSecret: exampleTokenSecret
+  refreshTokenSecret: exampleRefreshTokenSecret
+  accessTokenDurationMinutes: 600
+  refreshTokenDurationMinutes: 1200
+  accessTokenCookieName: accessToken
+  refreshTokenCookieName: refreshToken
+
+
+frontEnd:
+  # TODO change for prod
+  url: http://localhost:4200/
+
+env:
+  prod: false

@@ -1,0 +1,59 @@
+# this is test file
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service-service
+spec:
+  type: ClusterIP
+  selector:
+    app: gateway-service
+  ports:
+    - port: 9001
+      targetPort: 9001
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway-service
+  strategy: { }
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: gateway-service
+    spec:
+      containers:
+        - name: gateway-service
+          image: docker.io/nullchefo/gateway-service
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "1000m"
+          ports:
+            - containerPort: 9001
+---
+# make outside traffic to go here
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gateway-service-service
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            backend:
+              serviceName: api-gateway
+              servicePort: 9001
+---
+
+

@@ -1,0 +1,252 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-exception: true
+    include-stacktrace: always
+    whitelabel:
+      enabled: on
+spring:
+  application:
+    name: gateway-service
+  devtools:
+    livereload:
+      port: 35730
+
+
+  output.ansi.enabled: ALWAYS
+  data:
+    redis:
+      host: localhost
+      username:
+      password:
+
+  # Spring security
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://auth-server:9000
+          jwk-set-uri: http://auth-server:9000/oauth2/jwks
+  #  TODO!!! if resource server is not the ok use spring-boot-starter-oauth2-client
+  #  client:
+  #    registration:
+  #      keycloak:
+  #        client-id: edge-service
+  #        client-secret: polar-keycloak-secret
+  #        scope: openid
+  #    provider:
+  #      keycloak:
+  #        issuer-uri: ${KEYCLOAK_URL:http://localhost:8080}/realms/PolarBookshop
+  #
+
+  cloud:
+    gateway:
+
+      # default-filters is applied for all the endpoints
+      default-filters:
+        # save the session in redis(so the mapping between session and token is consistent )
+        #       - SaveSession
+
+        # TODO!!! if resource server is not the ok use spring-boot-starter-oauth2-client
+        # relays the token in the down-steam services this requires spring-boot-starter-oauth2-client
+        # - TokenRelay
+
+
+        # Doest send this RequestRateLimiter information to clients
+        - RemoveResponseHeader=X-RateLimit-Burst-Capacity
+        - RemoveResponseHeader=X-RateLimit-Remaining
+        - RemoveResponseHeader=X-RateLimit-Replenish-Rate
+        - RemoveResponseHeader=X-RateLimit-Requested-Tokens
+
+        # Retries
+        - name: Retry
+          args:
+            # count of retries
+            retries: 3
+            method: GET
+            backoff:
+              firstBackoff: 50ms
+              maxBackoff: 500ms
+        # Rate limiter
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter:
+              # how many tokens are put in the backer per second
+              replenishRate: 10
+              # Total capacity of the backer
+              burstCapacity: 20
+              # tokens per request
+              requestedToken: 1
+              # deny the requests
+              deny-empty-key: true
+              # HTTP 429 Too Many Requests
+              empty-key-status-code: 429
+
+      routes:
+        - id: user-service-route
+          # lb://user-service:8082
+          uri: http://127.0.0.1:9000
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - RewritePath=/api/auth/(?<segment>.*), /$\{segment}
+
+        - id: user-service-route
+          # lb://user-service:8082
+          uri: http://127.0.0.1:8082
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - RewritePath=/api/user/(?<segment>.*), /user/$\{segment}
+            # TODO add CircuitBreaker to every service
+        #            - name: CircuitBreaker
+        #              args:
+        #                name: userService
+        #                fallbackUri: forward:/user-service-fallback
+
+        - id: auth-service-route
+          # lb://auth-service:8086
+          uri: http://127.0.0.1:8086
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - RewritePath=/api/auth/(?<segment>.*), /auth/$\{segment}
+
+        - id: mail-process-service-route
+          # lb://mail-process-service:8084
+          uri: http://127.0.0.1:8084
+          predicates:
+            - Path=/api/mail/**
+          filters:
+            - RewritePath=/api/mail/(?<segment>.*), /mail/$\{segment}
+
+        - id: car-history-service-route
+          # lb://car-history-service:8085
+          uri: http://127.0.0.1:8085
+          predicates:
+            - Path=/api/car/**
+          filters:
+            - RewritePath=/api/car/(?<segment>.*), /$\{segment}
+      #            - AuthenticationFactory
+
+      globalcors:
+        corsConfigurations:
+          '[/api/**]':
+            allowedOrigins:
+              - http://localhost:4200
+              - http://127.0.0.1:4200
+              - http://localhost:8080
+              - http://127.0.0.1:8080
+              - http://localhost:4200
+              - http://127.0.0.1:4200
+              - https://mail.nullchefo.com
+              - https://nullchefo.com
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+
+      # TODO comment this
+
+      # -------------- ENABLE BELOW FOR TROUBLESHOOTING ----------
+      httpserver:
+        wiretap: true
+      httpclient:
+        wiretap: true
+
+logging:
+  level:
+    root: error
+    reactor.netty: trace
+    org.springframework.cloud.gateway: trace
+    org.springframework.http.server.reactive: trace
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+# ---------------------------------------------------------
+
+
+
+#Prometheus (and other data loggers)
+management:
+  #  server:
+  #    port: 8081
+  #    ssl:
+  #      enabled: false
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL:"http://localhost:9411"}
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+  health:
+    circuitbreakers:
+      enabled: true
+    ratelimiters:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        all: true
+        http.server.requests: true
+  tracing:
+    sampling:
+      probability: 1.0
+  prometheus:
+    metrics:
+      export:
+        step: 10s
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+
+
+#resilience4j:
+#  circuitbreaker:
+#    instances:
+#      userService:
+#        # will consider the last 10 request
+#        slidingWindowSize: 10
+#        permitted-number-of-calls-in-half-open-state: 5
+#        # if 50% of the 10 request failed it will open
+#        failureRateThreshold: 50
+#        # when it is open will stay in open state for 10000 ms (10s);
+#        #  after the 10 second it will stay half-open state then
+#        #  it will allow only 5 request (permitted-number-of-calls-in-half-open-state: 5)
+#        # and if 50 % of the request are failing then will open again but
+#        #  if they succeed then the braked will be closed.
+#        wait-duration-in-open-state: 10000
+#        registerHealthIndicator: true
+#  #        recordExceptions:
+#  #          - org.springframework.web.client.HttpServerErrorException
+#  #          - java.util.concurrent.TimeoutException
+#  #          - java.io.IOException
+#  # this is for timing out the request;
+#  # if the request is slow and 3 seconds pass
+#  # the request is count to failed requests
+#  timelimiter:
+#    instances:
+#      userService:
+#        timeout-duration: 3s
+
+logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]){yellow} %clr(:){red} %clr(%m){faint}%n" # (3)
+
+springdoc:
+  api-docs:
+    path: "/docs/api"
+  swagger-ui:
+    path: "/swagger-ui.html"

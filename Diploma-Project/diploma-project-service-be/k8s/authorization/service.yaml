@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: authorization
+  labels:
+    app: authorization
+    spring-boot: "true"
+spec:
+  selector:
+    app: authorization
+  type: ClusterIP
+  ports:
+    - port: 9000
+      targetPort: 9000
+#      protocol: TCP

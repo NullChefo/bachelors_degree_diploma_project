@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-configmap
+data:
+  # SPRING_PROFILES_ACTIVE: kubernetes
+  SPRING_DATA_REDIS_HOST: "redis"
+  REDIS_HOST: "redis"
+  ZIPKIN_URL: "http://tempo.monitoring.svc:9411"
+  MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: "http://tempo.monitoring.svc:9411"
+  #TODO change
+  LOKI_URL: "http://loki.monitoring.svc:3100/loki/api/v1/push"
+  AUTHORIZATION_SERVER_URL: "http://authorization:9000"
+  AUTHORIZATION_SERVER_ISSUER_URL: "https://auth.nullchefo.com"

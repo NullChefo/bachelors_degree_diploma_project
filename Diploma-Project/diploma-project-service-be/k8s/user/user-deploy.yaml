@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user
+  labels:
+    app: user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+      containers:
+        - name: user
+          image: docker.io/nullchefo/user-service:latest
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "1000m"
+            limits:
+              # after 1.7GB the GC is much better
+              # TODO add the JAVA GC talk link
+              memory: "1843Mi"
+              cpu: "2000m"
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - configMapRef:
+                name: user-configmap
+            - secretRef:
+                name: user-secret

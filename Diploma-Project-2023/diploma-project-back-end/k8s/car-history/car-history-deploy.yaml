@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: car-history
+  labels:
+    app: car-history
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: car-history
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+  template:
+    metadata:
+      labels:
+        app: car-history
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8185"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+        - name: car-history
+          image: ghcr.io/nullchefo/diploma-project-car-history-service:0.0.1-SNAPSHOT
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "256Mi"
+            limits:
+              memory: "512Mi"
+          ports:
+            - containerPort: 8085
+            - containerPort: 8185
+          envFrom:
+            - configMapRef:
+                name: car-history-configmap
+            - secretRef:
+                name: car-history-secret

@@ -1,0 +1,180 @@
+<div [id]="profile?.id" class="pt-4">
+
+  <div>
+
+    <div *ngIf="error " class="mb-3">
+      <div class="  rounded-lg  text-red-500 ">
+        <div [innerHTML]="error"></div>
+      </div>
+    </div>
+
+
+    <div class="flex flex-col md:flex-row items-center  justify-center">
+
+      <div class="flex mr-10 flex-1/3 w-[100%] justify-center items-center md:items-start">
+        <ng-container *ngIf="profile?.avatarURL">
+          <img class="rounded-full w-[40vh] border" loading="lazy" src="{{profile?.avatarURL}}">
+        </ng-container>
+
+        <ng-container *ngIf="profile?.avatarURL == undefined">
+          <img class=" w-[40vh] rounded-full border" loading="lazy" src="./assets/default_user.png">
+        </ng-container>
+      </div>
+
+
+      <div class="flex flex-col mr-10 p-4 flex-1/3 w-[100%] items-center md:items-start">
+
+
+        <div class=" flex space-x-2 text-2xl">
+          <p>{{profile?.firstName}}</p>
+          <p>{{profile?.lastName}}</p>
+          <ng-container *ngIf="profile?.verified">
+            <fa-icon [icon]="faBadgeCheck" class="text-xl text-blue-700"></fa-icon>
+          </ng-container>
+        </div>
+
+
+        <div class=" flex text-xl font-mono  "><p class="pr-1">@</p>{{profile?.username}}</div>
+
+        <ng-container *ngIf="profile?.pronouns">
+          <p class="">{{profile?.pronouns?.toUpperCase()}}</p>
+        </ng-container>
+
+
+        <ng-container *ngIf="profile?.about">
+          <p class=" font-thin">{{profile?.about}}</p>
+        </ng-container>
+
+
+        <div *ngIf="profile?.username ==  currentUsername" class="flex space-x-4 pb-4">
+
+
+          <a class="text-blue-400 underline" routerLink="/profile/edit"> <i></i>Profile settings</a>
+          <button (click)="deleteProfile(profile?.username)" class="text-red-600 underline">Delete profile
+          </button>
+
+
+          <!-- <a routerLink="/user/nullchefo"> <i></i>Search users</a> -->
+
+        </div>
+
+
+        <div class="flex items-center justify-start mb-3">
+          <div>
+            <fa-icon [icon]="faUsers" class="text-xl"></fa-icon>
+          </div>
+
+
+          <ng-container *ngIf="profile?.connectionsCount">
+            <span class="ml-4"> {{profile?.connectionsCount}}</span>
+          </ng-container>
+
+          <ng-container *ngIf="profile?.connectionsCount == undefined">
+            <span class="ml-4">Not connections yet </span>
+          </ng-container>
+
+        </div>
+
+
+      </div>
+
+
+      <div class="flex flex-col items-center md:items-start p-4 w-[100%] flex-1/3 space-y-2">
+
+        <div class="flex items-center justify-center">
+          <fa-icon [icon]="faWork" class="text-xl"></fa-icon>
+          <ng-container *ngIf="profile?.work">
+            <span class="ml-4">{{profile?.work}}</span>
+          </ng-container>
+
+          <ng-container *ngIf="profile?.work == undefined">
+            <span class="ml-4">Not provided</span>
+          </ng-container>
+        </div>
+
+        <div class="flex items-center justify-center">
+          <fa-icon [icon]="faGraduationCap" class="text-xl"></fa-icon>
+
+          <ng-container *ngIf="profile?.university">
+            <span class="ml-4">{{profile?.university}}</span>
+          </ng-container>
+
+          <ng-container *ngIf="profile?.university == undefined">
+            <span class="ml-4">Not provided</span>
+          </ng-container>
+        </div>
+
+        <div class="flex items-center justify-center">
+          <fa-icon [icon]="faSchool" class="text-xl"></fa-icon>
+
+          <ng-container *ngIf="profile?.school">
+            <span class="ml-4">{{profile?.school}}</span>
+          </ng-container>
+
+          <ng-container *ngIf="profile?.school == undefined">
+            <span class="ml-4">Not provided</span>
+          </ng-container>
+        </div>
+
+        <div class="flex items-center justify-center">
+          <fa-icon [icon]="faLink" class="text-xl"></fa-icon>
+
+          <ng-container *ngIf="profile?.websiteURL">
+                        <span class="ml-4"><a [href]="profile?.websiteURL"
+                                              class=" text-blue-600 underline">{{profile?.websiteURL}}</a></span>
+          </ng-container>
+
+          <ng-container *ngIf="profile?.websiteURL == undefined">
+            <span class="ml-4">Not provided</span>
+          </ng-container>
+        </div>
+
+        <div class="flex items-center justify-center">
+          <fa-icon [icon]="faLinkedIn" class="text-xl"></fa-icon>
+
+          <ng-container *ngIf="profile?.linkedInURL">
+                        <span class="ml-4"><a [href]="profile?.linkedInURL"
+                                              class=" text-blue-600 underline">{{profile?.linkedInURL}}</a></span>
+          </ng-container>
+
+          <ng-container *ngIf="profile?.linkedInURL == undefined">
+            <span class="ml-4">Not provided</span>
+          </ng-container>
+
+        </div>
+
+
+      </div>
+
+
+    </div>
+
+
+    <hr class="my-8 border-black border-dashed">
+
+    <h1 class="flex text-2xl justify-center items-center w-[100%]">User posts:</h1>
+
+
+    <div>
+
+      <div *ngIf="posts.length > 0">
+        <div (scrolled)="onScroll()" [infiniteScrollDistance]="2" [infiniteScrollThrottle]="500"
+             [scrollWindow]="true" class="posts-infinite-scroll" infiniteScroll>
+
+
+          <app-list-post [posts]="posts"></app-list-post>
+
+
+          <div *ngIf="isLoading">Loading...</div>
+        </div>
+
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+</div>

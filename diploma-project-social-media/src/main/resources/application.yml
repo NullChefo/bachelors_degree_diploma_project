@@ -1,0 +1,189 @@
+server:
+  port: 8092
+  shutdown: graceful
+  error:
+    include-message: always
+    include-exception: true # TODO make it false
+
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+    #      username: ${REDIS_USERNAME:username}
+    #      password: ${REDIS_PASSWORD:username}
+    web:
+      pageable:
+        default-page-size: 20
+  # TODO!!! fix
+  main:
+    allow-circular-references: true
+
+  application:
+    name: social-media-service
+  output.ansi.enabled: ALWAYS
+
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 25MB
+
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://127.0.0.1:5432/diploma-project}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:rootpassword}
+    # Connection Pool
+    hikari:
+      auto-commit: true
+      max-lifetime: 1000
+      maximum-pool-size: 100
+      minimum-idle: 10
+      connection-timeout: 20000
+  rabbitmq:
+    addresses: ${RABBITMQ_ADDRESS:127.0.0.1}
+    port: ${RABBITMQ_POST:15672}
+    username: ${RABBITMQ_USERNAME:user}
+    password: ${RABBITMQ_PASSWORD:password}
+  jpa:
+    hibernate:
+      # TODO make validate
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+    # TODO make true
+  flyway:
+    enabled: false
+
+
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTHORIZATION_SERVER_ISSUER_URL:http://authorization:9000}
+          jwk-set-uri: ${AUTHORIZATION_SERVER_URL:http://authorization:9000}/oauth2/jwks
+
+management:
+  # management.metrics.export.loki.uri=<loki-url>
+  # management.metrics.export.loki.enabled=true
+  server:
+    # actuator port
+    port: 8192
+  #  server:
+  #    port: 8081
+  #    ssl:
+  #      enabled: false
+
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL:"http://localhost:9411"}
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+  metrics:
+    export:
+      loki:
+        url: ${LOKI_URL:http://localhost:3100/loki/api/v1/push}
+      enabled: true
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        all: true
+        http.server.requests: true
+      minimum-expected-value:
+        http.server.requests: 5ms
+      maximum-expected-value:
+        http.server.requests: 1000ms
+  tracing:
+    sampling:
+      probability: 1.0
+  prometheus:
+    metrics:
+      export:
+        step: 3s
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+
+
+
+
+rabbitmq:
+  queue:
+    name: mail-send-queue
+  exchange:
+    name: mail-send-exchange
+  routing:
+    key: mail-send-routing-key
+
+
+env:
+  prod: true
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+## Only for debugging purposes
+#  level:
+#    root: INFO
+#    org.springframework.web: TRACE
+#    org.springframework.security: TRACE
+#    org.springframework.security.oauth2: TRACE
+#    org.springframework.cloud.gateway: TRACE
+#    org.springframework.security.jwt: TRACE
+
+springdoc:
+  api-docs:
+    path: /v1/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    oauth:
+      use-pkce-with-authorization-code-grant: true
+      client-id: swagger-client
+#      scopes:
+#        - openid
+#        - social_media.read
+#        - social_media.write
+#    oauth2-redirect-url: https://backend.nullchefo.com/social-media/swagger/swagger-ui/index.html
+
+aws:
+  access:
+    key:
+      id: ${AWS_ACCESS_KEY:access_key}
+
+  secret:
+    access:
+      key: ${AWS_SECRET_KEY:secret}
+
+  s3:
+    # eu-central-1
+    region: ${AWS_REGION:region}
+    bucket:
+      name: ${AWS_BUCKET_NAME:bucket_name}
+    public-path: ${AWS_S3_PUBLIC_PATH:https://diploma-project-aws-bucket.s3.eu-central-1.amazonaws.com}
+
+
+address:
+  frontEnd:
+    successfullyLogOut: https://diploma-project-ui.nullchefo.com/auth/logged-out
+    thanksForRegistrationURL: https://diploma-project-ui.nullchefo.com/auth/verifyRegistration
+    validateRegistrationURL: ${FE_ADDRESS:https://diploma-project-ui.nullchefo.com}/auth/verifyRegistration
+    passwordResetURL: ${FE_ADDRESS:https://diploma-project-ui.nullchefo.com}/auth/savePassword
+  backEnd:
+    userServerRegisterURL: http://user:8082/user/v1/register
+
+services-list:
+  authorization-service: "http://authorization:9000"
+  mail-process-service: "http://mail-process:9004"
+  mail-send-service: "http://mail-send:9005"

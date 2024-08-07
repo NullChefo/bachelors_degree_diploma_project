@@ -1,0 +1,93 @@
+<div [id]="post.id" class="border">
+
+  <div *ngIf="error" class="text-red-500" role="alert">
+    <div [innerHTML]="error"></div>
+  </div>
+
+  <div class="flex">
+
+    <div class="flex">
+
+      <a routerLink="/user/{{post.creator?.username}}">
+
+
+        <ng-container *ngIf="post.creator?.avatarURL">
+          <img class="w-24 h-24 rounded-full border" loading="lazy" src="{{post.creator?.avatarURL}}">
+        </ng-container>
+
+        <ng-container *ngIf="!post.creator?.avatarURL">
+          <img class="w-24 h-24 rounded-full border" loading="lazy" src="./assets/default_user.png">
+        </ng-container>
+      </a>
+      <div class="flex flex-col justify-center">
+        <a routerLink="/user/{{post.creator?.username}}">
+          {{post.creator?.firstName}} {{post.creator?.lastName}}
+          <ng-container *ngIf="post.creator?.verified">
+            <fa-icon [icon]="faBadgeCheck" class="text-xl text-blue-700 justify-center"></fa-icon>
+          </ng-container>
+
+        </a>
+
+
+        <a class="flex" routerLink="/user/{{post.creator?.username}}">
+          <div class="text-gray-600 justify-center pr-2">@{{post.creator?.username}}</div>
+          <div>{{createdFromNow}} ago</div>
+        </a>
+
+
+        <div class="mt-1">
+          <markdown (error)="onErrorMarkdown($event)" (load)="onLoadMarkdown($event)"
+                    [data]="markdownContent"></markdown>
+        </div>
+
+
+        <div>
+          <!--ATTACHMENTS-->
+        </div>
+
+
+        <div class="flex space-x-3">
+
+          <div class="flex space-x-1 text-xl">
+            <app-comment-button [commentCount]="post.commentCount" [isCommented]="post.commented"
+                                [postId]="post.id"></app-comment-button>
+          </div>
+
+          <div class="flex space-x-1 text-xl">
+            <app-like-button [isLiked]="post.liked" [likeCount]="post.likeCount"
+                             [postId]="post.id"></app-like-button>
+          </div>
+
+          <ng-container *ngIf="post.creator?.username == username">
+            <button (click)="editPost()">
+              <fa-icon [icon]="faEdit" class=" text-orange-700"></fa-icon>
+            </button>
+          </ng-container>
+
+
+          <ng-container *ngIf="post.creator?.username == username">
+            <button (click)="onDelete()">
+              <fa-icon [icon]="faDelete" class=" text-red-700"></fa-icon>
+            </button>
+          </ng-container>
+
+        </div>
+
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+  <!-- <div *ngIf="post.attachments">
+      <app-media-list [attachments]="post.attachments"></app-media-list>
+  </div> -->
+
+
+  <!-- <p>{{post.attachments}}</p> -->
+
+
+</div>

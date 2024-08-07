@@ -1,0 +1,72 @@
+server:
+  port: 8085
+  shutdown: graceful
+  error:
+    include-message: always
+    include-exception: true # TODO make it false
+
+spring:
+  application:
+    name: car-history-service
+  datasource:
+    url:
+    username:
+    password:
+  rabbitmq:
+    addresses:
+    port:
+    username:
+    password:
+   # host: 127.0.0.1
+  jpa:
+    hibernate:
+      #TODO make validate
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  flyway:
+    #TODO make true
+    enabled: false
+  zipkin:
+    enabled: true
+    base-url: http://zipkin:9411
+  sleuth:
+    enabled: true
+    sampler:
+      probability: 1.0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} ${LOG_LEVEL_PATTERN:-%5p} %m%n"
+
+
+rabbitmq:
+  queue:
+    name: mail-process-queue
+  exchange:
+    name: mail-process-exchange
+  routing:
+    key: mail-process-routing-key
+
+springdoc:
+  api-docs:
+    path: "/docs/api"
+  swagger-ui:
+    path: "/docs/swagger-ui"
+
+frontEnd:
+  # TODO change for prod
+  url: http://localhost:4200

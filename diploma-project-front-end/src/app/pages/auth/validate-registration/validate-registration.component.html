@@ -1,0 +1,55 @@
+<div class="flex  justify-center pt-14">
+
+  <!-- flex-1 to take all the space of the container   TODO make a braking point and make it larger when goes bellow that   -->
+  <div
+    class="flex  flex-col text-white bg-gray-800 shadow-2xl shadow-amber-700 md:w-[30rem] w-[20rem] mr-3 ml-3 rounded-3xl">
+
+
+    <div class="flex justify-center pt-5 text-5xl items-center text-center">
+      <h1>Validate registration</h1>
+    </div>
+
+    <div *ngIf="tokenExpired" class=" pt-14">
+
+      <div *ngIf="sendError" [innerHTML]="sendError" class=" text-center text-2xl text-red-400 pl-5 pr-5 pb-5">
+
+      </div>
+
+      <div class="flex justify-center text-center text-2xl ">
+        Your activation mail is expired!
+      </div>
+
+      <div class=" pt-8 justify-center text-center pb-16 ">
+        <button (click)="sendNewRegisterToken()" class=" bg-amber-600  rounded-lg text-2xl p-2"
+                type="button">Request new one
+        </button>
+      </div>
+
+
+    </div>
+
+
+    <div *ngIf="!tokenExpired" class=" pt-14">
+
+      <div *ngIf="validationError" [innerHTML]="sendError"
+           class=" text-center text-2xl text-red-400 pl-5 pr-5 pb-5">
+
+      </div>
+
+      <div class="flex justify-center text-center text-2xl pb-10">
+        Your account is verified!
+      </div>
+
+      <div class="flex justify-center items-center mb-10 underline underline-offset-4 font-bold">
+        <button (click)="logIn()">
+          <a> Back to login </a>
+        </button>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+</div>

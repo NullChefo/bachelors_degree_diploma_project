@@ -1,0 +1,41 @@
+global:
+  scrape_interval:     10s
+  evaluation_interval: 10s
+
+scrape_configs:
+  - job_name: 'gateway-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'gateway-service:9001' ]
+        labels:
+          application: 'Gateway Service'
+  - job_name: 'auth-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['auth-service:9002']
+        labels:
+          application: 'Auth Service'
+  - job_name: 'user_service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['user_service:9003']
+        labels:
+          application: 'User Service'
+  - job_name: 'mail-process-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'mail-process-service:9004' ]
+        labels:
+          application: 'Mail Process Service Application'
+  - job_name: 'mail-send-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['mail-send-service:9005']
+        labels:
+          application: 'Mail Send Service'
+  - job_name: 'car-history-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['car-history-service:9006']
+        labels:
+          application: 'Car history Service Application'

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mail-send
+  labels:
+    app: mail-send
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mail-send
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+  template:
+    metadata:
+      labels:
+        app: mail-send
+    spec:
+      containers:
+        - name: mail-send
+          image: docker.io/nullchefo/mail-send-service:latest
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "1000m"
+            limits:
+              # after 1.7GB the GC is much better
+              # TODO add the JAVA GC talk link
+              memory: "1843Mi"
+              cpu: "2000m"
+          ports:
+            - containerPort: 8083
+          envFrom:
+            - configMapRef:
+                name: mail-send-configmap
+            - secretRef:
+                name: mail-send-secret
+            - secretRef:
+                name: mail-send-credentials-secret

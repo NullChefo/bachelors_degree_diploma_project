@@ -1,0 +1,111 @@
+server:
+  port: 9000
+  shutdown: graceful
+  error:
+    include-message: always
+    # TODO make it false
+    include-exception: true
+  servlet:
+    session:
+      cookie:
+        # lax
+        same-site: lax
+        secure: false
+
+spring:
+  application:
+    name: authorization-service
+  devtools:
+    livereload:
+      port: 35730
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/dev-users
+    username: postgres
+    password: rootpassword
+  rabbitmq:
+    addresses: 127.0.0.1
+    port: 15672
+    username: user
+    password: password
+    # host: 127.0.0.1
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  flyway:
+    enabled: false
+
+  # Security
+  security:
+    oauth2:
+      client:
+        registration:
+          apple-idp:
+            provider: apple
+            client-id: ${APPLE_CLIENT_ID:apple-client-id}
+            client-secret: ${APPLE_CLIENT_SECRET:apple-client-secret}
+            client-authentication-method: post
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/api/login/oauth2/code/{registrationId}"
+            scope: openid,name,email
+            client-name: Apple
+          google-idp:
+            provider: google
+            client-id: ${GOOGLE_CLIENT_ID:google-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:google-client-secret}
+            scope: openid, https://www.googleapis.com/auth/userinfo.profile, https://www.googleapis.com/auth/userinfo.email
+            client-name: Sign in with Google
+          github-idp:
+            provider: github
+            client-id: ${GITHUB_CLIENT_ID:github-client-id}
+            client-secret: ${GITHUB_CLIENT_SECRET:github-client-secret}
+            scope: user:email, read:user
+            client-name: Sign in with GitHub
+          facebook-idp:
+            provider: facebook
+            clientId: ${FACEBOOK_CLIENT_ID:facebook-client-id}
+            clientSecret: ${FACEBOOK_CLIENT_SECRET:facebook-client-secret}
+            scope:
+              - email
+              - public_profile
+            client-name: Sign in with Facebook
+        provider:
+          google:
+            user-name-attribute: email
+          github:
+            user-name-attribute: login
+          apple:
+            authorization-uri: https://appleid.apple.com/auth/authorize?response_mode=form_post
+            token-uri: https://appleid.apple.com/auth/token
+            jwk-set-uri: https://appleid.apple.com/auth/keys
+            user-name-attribute: sub
+          facebook:
+            user-name-attribute: email
+
+
+logging:
+  level:
+    blog: WARN
+    root: INFO
+    org:
+      springframework:
+        web: INFO
+        security: INFO
+        oauth2: INFO
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+

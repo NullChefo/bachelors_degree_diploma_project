@@ -1,0 +1,71 @@
+server:
+  port: 8083
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: mail-send-service
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/diploma_project?createDatabaseIfNotExist=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true
+    username: user
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  rabbitmq:
+    addresses: localhost
+    port: 15672
+    password: password
+    username: user
+  zipkin:
+    base-url: http://localhost:9411
+  sleuth:
+    sampler:
+      probability: 1.0
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update # TODO make it update when "ready"
+  cloud:
+    kubernetes:
+      loadbalancer:
+        enabled: true
+        mode: service
+      enabled: true
+    loadbalancer:
+      ribbon:
+        enabled: false
+  # TODO ADD YOUR EMAIL CREDENTIALS
+  mail:
+    host:
+    port:
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+        ssl:
+          protocols: TLSv1.2
+        starttls:
+          enable: true
+    default-encoding: UTF-8
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # TODO *
+        include: prometheus
+
+rabbitmq:
+  queue:
+    name: mail-send-queue
+  exchange:
+    name: mail-send-exchange
+  routing:
+    key: mail-send-routing-key
+
+
+
+
+

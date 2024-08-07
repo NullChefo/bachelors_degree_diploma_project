@@ -1,0 +1,54 @@
+<div class="max-h-screen bg-amber-600 min-h-[7vh] ">
+    <div class="flex justify-between  items-center pt-3">
+
+        <div class=" flex text-3xl justify-center items-center">
+            <div class="text-center pl-3">
+                <a routerLink="/">
+                    <fa-icon [icon]="faHome"></fa-icon> Home
+                </a>
+            </div>
+        </div>
+
+        <div *ngIf="isUserLogged">
+            <div class="text-3xl flex space-x-5 ">
+                <div class="text-center">
+
+                    <a routerLink="/cars/user">
+                        <fa-icon [icon]="faCar"></fa-icon> Car panel
+                    </a>
+
+                </div>
+
+                <button (click)="logOut()">
+                    <fa-icon [icon]="faLogOut"></fa-icon>
+                    Log out
+                </button>
+            </div>
+        </div>
+        <div *ngIf="!isUserLogged">
+
+            <div class=" flex md:flex text-3xl space-x-5">
+                <div>
+                    <fa-icon [icon]="faCar"></fa-icon>
+                    <a routerLink="/cars/user"> Car panel</a>
+                </div>
+
+                <div class=" flex md:flex text-3xl space-x-5">
+                    <div>
+                        <fa-icon [icon]="faRegister"></fa-icon>
+                        <a routerLink="/user/register"> Register </a>
+                    </div>
+
+
+                    <div class=" flex md:flex text-3xl space-x-5">
+                        <div>
+                            <fa-icon [icon]="faLogIn"></fa-icon>
+                            <a routerLink="/user/login"> Log in</a>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>

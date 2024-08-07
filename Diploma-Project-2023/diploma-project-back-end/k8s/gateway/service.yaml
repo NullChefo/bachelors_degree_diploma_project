@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  labels:
+    app: gateway
+    spring-boot: "true"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "8100"
+    prometheus.io/scrape: "true"
+spec:
+  selector:
+    app: gateway
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+    - name: actuator
+      port: 8100
+      targetPort: 8100

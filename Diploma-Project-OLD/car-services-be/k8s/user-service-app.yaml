@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: user-service
+  name: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - image: docker.io/nullchefo/user-service
+          name: user-service
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "1000m"
+          ports:
+          - containerPort: 9003
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: user-service
+  name: user-service
+spec:
+  ports:
+    - name: 9003-9003
+      port: 9003
+      protocol: TCP
+      targetPort: 9003
+  selector:
+    app: user-service
+    # internal only
+  type: ClusterIP
+status:
+  loadBalancer: {}
+
+

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user
+  labels:
+    app: user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+  template:
+    metadata:
+      labels:
+        app: user
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8182"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+        - name: user
+          image: ghcr.io/nullchefo/diploma-project-user-service:0.0.1-SNAPSHOT
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "256Mi"
+            # cpu: "1000m"
+            limits:
+              # after 1.7GB the GC is much better
+              memory: "512Mi"
+          #  cpu: "2000m"
+          ports:
+            - containerPort: 8082
+            - containerPort: 8182
+          envFrom:
+            - configMapRef:
+                name: user-configmap
+            - secretRef:
+                name: user-secret

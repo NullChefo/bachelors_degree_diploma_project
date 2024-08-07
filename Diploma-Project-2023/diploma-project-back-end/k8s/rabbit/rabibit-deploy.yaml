@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+  replicas: 1 # Set 3 deployment replicas
+  selector:
+    matchLabels:
+      app: rabbitmq
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3.9.29-management-alpine
+          resources:
+            requests:
+              memory: "256Mi"
+            limits:
+              memory: "512Mi"
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 15672
+            - name: amqp
+              protocol: TCP
+              containerPort: 5672
+          envFrom:
+            - configMapRef:
+                name: rabbitmq-configmap
+            - secretRef:
+                name: rabbitmq-secret
+          volumeMounts:
+            - mountPath: /var/lib/rabbitmq/data
+              name: rabbitmqdata
+      volumes:
+        - name: rabbitmqdata
+          persistentVolumeClaim:
+            claimName: rabbitmq-volume-claim

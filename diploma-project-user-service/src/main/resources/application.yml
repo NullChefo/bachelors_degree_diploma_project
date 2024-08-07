@@ -1,0 +1,145 @@
+server:
+  port: 8082
+  shutdown: graceful
+  error:
+    include-message: always
+    include-exception: true # TODO make it false
+
+
+spring:
+  application:
+    name: user-service
+  output.ansi.enabled: ALWAYS
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://127.0.0.1:5432/diploma-project}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:rootpassword}
+  rabbitmq:
+    addresses: ${RABBITMQ_ADDRESS:127.0.0.1}
+    port: ${RABBITMQ_POST:15672}
+    username: ${RABBITMQ_USERNAME:user}
+    password: ${RABBITMQ_PASSWORD:password}
+  jpa:
+    hibernate:
+      # TODO make validate
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+    # TODO make true
+  flyway:
+    enabled: false
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTHORIZATION_SERVER_ISSUER_URL:http://authorization:9000}
+          jwk-set-uri: ${AUTHORIZATION_SERVER_URL:http://authorization:9000}/oauth2/jwks
+      client:
+        registration:
+          spring-client-oidc:
+            provider: spring
+            client-id: spring-services
+            client-secret: "very_secure-spring!!"
+            authorization-grant-type: client_credentials
+        provider:
+          spring:
+            token-uri: ${AUTHORIZATION_SERVER_ISSUER_URL:http://authorization:9000}
+            jwk-set-uri: ${AUTHORIZATION_SERVER_URL:http://authorization:9000}/oauth2/jwks
+
+
+management:
+  # management.metrics.export.loki.uri=<loki-url>
+  # management.metrics.export.loki.enabled=true
+  server:
+    # actuator port
+    port: 8182
+  #  server:
+  #    port: 8081
+  #    ssl:
+  #      enabled: false
+
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL:"http://localhost:9411"}
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+  metrics:
+    export:
+      loki:
+        url: ${LOKI_URL:http://localhost:3100/loki/api/v1/push}
+      enabled: true
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        all: true
+        http.server.requests: true
+  tracing:
+    sampling:
+      probability: 1.0
+  prometheus:
+    metrics:
+      export:
+        step: 3s
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+
+rabbitmq:
+  queue:
+    name: mail-process-queue
+  exchange:
+    name: mail-process-exchange
+  routing:
+    key: mail-process-routing-key
+
+frontEnd:
+  uri: ${FE_ADDRESS:https://diploma-project.nullchefo.com}
+  validateRegistrationURL: ${FE_ADDRESS:https://diploma-project.nullchefo.com}/auth/verifyRegistration
+  passwordResetURL: ${FE_ADDRESS:https://diploma-project.nullchefo.com}/auth/savePassword
+
+env:
+  prod: true
+
+services-list:
+  authorization-service: "http://authorization:9000"
+  mail-process-service: "http://mail-process:9004"
+  mail-send-service: "http://mail-send:9005"
+  car-history-service: "http://car-history:9006"
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+## Only for debugging purposes
+#  level:
+#    root: INFO
+#    org.springframework.web: TRACE
+#    org.springframework.security: TRACE
+#    org.springframework.security.oauth2: TRACE
+#    org.springframework.cloud.gateway: TRACE
+#    org.springframework.security.jwt: TRACE
+
+springdoc:
+  api-docs:
+    path: /v1/api-docs #these urls will used to load the swagger ui of this service by the api gateway
+  swagger-ui:
+    path: /swagger-ui.html
+    oauth:
+      use-pkce-with-authorization-code-grant: true
+      client-id: swagger-client
+
+spring.sleuth.otel.config.trace-id-ratio-based: 1.0
+spring.sleuth.otel.exporter.otlp.endpoint: http://tempo:4317

@@ -1,0 +1,66 @@
+<div class="p-4">
+
+  <h2>Comments</h2>
+
+
+  <div *ngIf="error " class="mb-3">
+    <div class="  rounded-lg  text-red-500 ">
+      <div [innerHTML]="error"></div>
+    </div>
+  </div>
+
+
+  <ng-container>
+
+    <form #form="ngForm" (submit)="createComment()" class="flex space-x-2">
+
+      <input
+        [(ngModel)]="newComment.content"
+        class="w-[15vw] border rounded-sm"
+        id="commentContent"
+        name="commentContent" placeholder="Something to comment about?"
+        required type="text"
+
+
+      >
+
+
+      <ul class="">
+
+        <li class="text-red-600 {{isCommentValid ? 'hidden' : '' }} ">
+          Enter valid comment!
+        </li>
+
+      </ul>
+
+
+      <button
+        class=""
+        type="submit">
+
+        Create Comment
+      </button>
+
+    </form>
+
+  </ng-container>
+
+
+  <div *ngIf="comments == undefined">
+    <p>No comments for this post yet. Be the first to comment!</p>
+  </div>
+
+
+  <div *ngIf="comments != undefined">
+
+    <div (scrolled)="onScroll()" [infiniteScrollDistance]="2" [infiniteScrollThrottle]="500" [scrollWindow]="true"
+         class="posts-infinite-scroll" infiniteScroll>
+
+      <div *ngFor="let comment of comments">
+        <app-comment-item [comment]="comment"></app-comment-item>
+      </div>
+
+    </div>
+
+  </div>
+</div>

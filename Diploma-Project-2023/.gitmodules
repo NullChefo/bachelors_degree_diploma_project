@@ -1,0 +1,18 @@
+[submodule "diploma-project-front-end"]
+	path = diploma-project-front-end
+	url = https://github.com/NullChefo/diploma-project-front-end.git
+[submodule "diploma-project-back-end/diploma-project-gateway-service"]
+	path = diploma-project-back-end/diploma-project-gateway-service
+	url = https://github.com/NullChefo/diploma-project-gateway-service.git
+[submodule "diploma-project-back-end/diploma-project-authorization-service"]
+	path = diploma-project-back-end/diploma-project-authorization-service
+	url = https://github.com/NullChefo/diploma-project-authorization-service.git
+[submodule "diploma-project-back-end/diploma-project-user-service"]
+	path = diploma-project-back-end/diploma-project-user-service
+	url = https://github.com/NullChefo/diploma-project-user-service.git
+[submodule "diploma-project-back-end/diploma-project-mail-send-service"]
+	path = diploma-project-back-end/diploma-project-mail-send-service
+	url = https://github.com/NullChefo/diploma-project-mail-send-service.git
+[submodule "diploma-project-back-end/diploma-project-social-media"]
+	path = diploma-project-back-end/diploma-project-social-media
+	url = https://github.com/NullChefo/diploma-project-social-media.git

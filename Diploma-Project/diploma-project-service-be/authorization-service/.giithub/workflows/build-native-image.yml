@@ -1,0 +1,60 @@
+name: build-native-image
+
+on:
+  push:
+    paths-ignore:
+      - "docs/**"
+    branches:
+      - master
+
+jobs:
+  build:
+    name: ${{ matrix.version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        version: [latest, dev, '22.3.0']
+        os: [ macos-latest, windows-latest, ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          version: ${{ matrix.version }}
+          java-version: '19'
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker-practice/actions-setup-docker@master
+        if: runner.os == 'MacOS'
+      - name: Set up MongoDB
+        run: |
+          docker-compose up -d mongodb
+          sleep 10
+          docker ps -a
+
+      - name: Build Native Image & Run Application and FunctionalTests
+        run: |
+          mvn clean package -DskipTests -Pspring-native,build-native-image
+          ./target/com.example.demo.demoapplication &
+          sleep 10
+          mvn test -Pfunctional-test
+        if: runner.os != 'Windows'
+
+      - name: Build Native Image & Run Application and FunctionalTests on Windows
+        run: |
+          mvn clean package -DskipTests -P "spring-native,build-native-image"
+          .\target\com.example.demo.demoapplication.exe &
+          sleep 10
+          mvn test -Pfunctional-test
+        if: runner.os == 'Windows'
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: demoapplication-${{ matrix.os }}-${{ matrix.version }}
+          path: target/com.example.demo.demoapplication*

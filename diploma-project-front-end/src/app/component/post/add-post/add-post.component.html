@@ -1,0 +1,21 @@
+<div class="p-4">
+  <div *ngIf="error " class="mb-3">
+    <div class="  rounded-lg  text-red-500 ">
+      <div [innerHTML]="error"></div>
+    </div>
+  </div>
+
+  <!-- <app-media-add [postUUID]="post.postUUID"></app-media-add> -->
+
+  <form #form="ngForm" (submit)="submit()"
+        class="flex flex-col md:flex-row justify-center items-center space-x-4 space-y-4">
+        <textarea #name="ngModel" [(ngModel)]="post.content" class=" w-80 h-40 border rounded-lg"
+                  name="content" placeholder="What is happening?" type=""></textarea>
+    <button (click)="submit()"
+            class="w-20 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            type="button">Submit
+    </button>
+
+  </form>
+
+</div>

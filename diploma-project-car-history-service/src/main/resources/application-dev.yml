@@ -1,0 +1,67 @@
+server:
+  port: 8085
+  shutdown: graceful
+  error:
+    include-message: always
+    include-exception: true
+spring:
+  application:
+    name: car-history-service
+  devtools:
+    livereload:
+      port: 35730
+  #  output.ansi.enabled: ALWAYS
+
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/diploma-project
+    username: postgres
+    password: rootpassword
+  rabbitmq:
+    addresses: 127.0.0.1
+    port: 15672
+    username: user
+    password: password
+    # host: 127.0.0.1
+  jpa:
+    hibernate:
+      #TODO make validate
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  flyway:
+    #TODO make true
+    enabled: false
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL:http://localhost:9144}
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+rabbitmq:
+  queue:
+    name: mail-process-queue
+  exchange:
+    name: mail-process-exchange
+  routing:
+    key: mail-process-routing-key
+
+springdoc:
+  api-docs:
+    path: "/docs/api"
+  swagger-ui:
+    path: "/docs/swagger-ui"
+
+frontEnd:
+  # TODO change for prod
+  url: http://localhost:4200
+

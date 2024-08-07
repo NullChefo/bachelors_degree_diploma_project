@@ -1,0 +1,28 @@
+<div>
+
+  <h2>Likes:</h2>
+
+  <div *ngIf="likes == undefined">
+    <p>No likes. Be the first to like!</p>
+  </div>
+
+
+  <div *ngIf="likes.length > 0">
+    <div
+      (scrolled)="onScroll()"
+      [infiniteScrollDistance]="2"
+      [infiniteScrollThrottle]="500"
+      [scrollWindow]="true"
+      class="posts-infinite-scroll"
+      infiniteScroll
+    >
+
+      <div *ngIf="likes != undefined">
+        <div *ngFor="let like of likes">
+          <app-like-item [like]="like"></app-like-item>
+        </div>
+      </div>
+
+    </div>
+
+  </div>

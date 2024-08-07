@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tempo
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tempo
+  template:
+    metadata:
+      labels:
+        app: tempo
+    spec:
+      containers:
+        - name: tempo
+          image: grafana/tempo:main-060f8be
+          resources:
+            requests:
+              memory: "256Mi"
+            #              cpu: "1000m"
+            limits:
+              # after 1.7GB the GC is much better
+              # TODO add the JAVA GC talk link
+              memory: "512Mi"
+          #              cpu: "2000m"
+          ports:
+            - containerPort: 3100
+            - containerPort: 14268
+            - containerPort: 4317
+            - containerPort: 4318
+            - containerPort: 3200
+            - containerPort: 9411
+          args:
+            - -config.file=/etc/tempo/tempo.yml
+          #      command:
+          #     - "-config.file /etc/tempo/tempo.yaml"
+          volumeMounts:
+            - name: config
+              mountPath: /etc/tempo
+            - name: data
+              mountPath: /var/tempo
+      volumes:
+        - name: config
+          configMap:
+            defaultMode: 420
+            name: tempo-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: tempo-volume-claim

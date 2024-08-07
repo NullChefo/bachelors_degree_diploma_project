@@ -1,0 +1,369 @@
+---
+version: '3'
+services:
+
+  ## Postgres database
+  postgres-db:
+    image: postgres:15.2-alpine
+    container_name: postgres_diploma_project
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=rootpassword
+      - POSTGRES_DB=diploma-project
+    ports:
+      - '5432:5432'
+  #    volumes:
+  #      - db:/var/lib/postgresql/data
+
+
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: rabbitmq_diploma_project
+    expose:
+      - "5672"
+      - "15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    #    volumes:
+    #      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+    #      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    restart: unless-stopped
+
+  #  ----------------START-MY-IMPLEMENTATION------------------
+  #
+  #    ## Redis database
+  #    redis:
+  #      image: redis:alpine
+  #      container_name: redis
+  #      ports:
+  #        - "6379:6379"
+
+  #  ## Zipkin
+  #  zipkin:
+  #    image: openzipkin/zipkin
+  #    container_name: zipkin
+  #    expose:
+  #      - "9411"
+  #    ports:
+  #      - "9411:9411"
+  #    restart: unless-stopped
+  #
+  #
+  #  ## Prometheus
+  #  prometheus:
+  #    image: prom/prometheus:latest
+  #    container_name: prometheus
+  #    restart: unless-stopped
+  #    expose:
+  #      - "9090"
+  #    ports:
+  #      - "9090:9090"
+  #    volumes:
+  #      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  #
+  #
+  #  grafana:
+  #    image: grafana/grafana-oss:latest
+  #    container_name: grafana
+  #    restart: unless-stopped
+  #    expose:
+  #      - "3000"
+  #    ports:
+  #      - "3000:3000"
+  #    links:
+  #      - prometheus:prometheus
+  #    volumes:
+  #      - ./grafana:/var/lib/grafana
+  #    environment:
+  #      - GF_SECURITY_ADMIN_USER=admin
+  #      - GF_SECURITY_ADMIN_PASSWORD=password
+
+
+  # ---------------------------END-MY-IMPLEMENTATION-----------------
+
+  #  SOURCE https://www.youtube.com/watch?v=UXcCHX_ymag
+  #  SOURCE https://github.com/ThomasVitale/spring-cloud-gateway-resilience-security-observability/tree/main
+
+
+  prometheus:
+    #   image: grafana/grafana:9.3.6
+    image: prom/prometheus:latest
+    container_name: prometheus_diploma_project
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./platform/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: unless-stopped
+
+  tempo:
+    # image: grafana/tempo:2.0.0
+    image: grafana/tempo:latest
+    container_name: tempo_diploma_project
+    command: -config.file /etc/tempo-config.yml
+    ports:
+      - "3110:3100"     # Tempo
+      - "4317:4317"     # OTLP
+      - "9411:9411"     # Zipkin
+    volumes:
+      - ./platform/tempo/tempo.yml:/etc/tempo-config.yml
+    restart: unless-stopped
+
+  # Observability
+  grafana:
+    # image: grafana/grafana:9.3.6
+    image: grafana/grafana:latest
+    container_name: grafana_diploma_project
+    depends_on:
+      - loki
+      - prometheus
+      - tempo
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    volumes:
+      - ./platform/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ./platform/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./platform/grafana/grafana.ini:/etc/grafana/grafana.ini
+  #    restart: unless-stopped
+
+  loki:
+    # image: grafana/loki:2.7.3
+    image: grafana/loki:latest
+    container_name: loki_diploma_project
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    restart: unless-stopped
+
+  redis:
+    # image: redis:7
+    image: redis:alpine
+    container_name: redis_diploma_project
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  ## Gateway-Service Docker Compose Config
+  gateway-service:
+    container_name: gateway-service
+    image: ghcr.io/nullchefo/diploma-project-gateway-service:0.0.1-SNAPSHOT
+    environment:
+      - LOKI_URI=http://loki_diploma_project:3100/loki/api/v1/push
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo_diploma_project:9411
+      - SPRING_DATA_REDIS_HOST=redis_diploma_project
+      - SERVER_PORT=9001
+      - MANAGEMENT_SERVER_PORT=9101
+    expose:
+      - "9001"
+    ports:
+      - "9001:9001"
+      - "9101:9101"
+
+
+
+  ## Authorization-Service Docker Compose Config
+  authorization-service:
+    container_name: auth-service
+    image: ghcr.io/nullchefo/diploma-project-authorization-service:0.0.1-SNAPSHOT
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_diploma_project:5432/project
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - SPRING_RABBITMQ_ADDRESSES=rabbitmq_diploma_project
+      - SPRING_RABBITMQ_PORT=15672
+      - SPRING_RABBITMQ_USERNAME=user
+      - SPRING_RABBITMQ_PASSWORD=password
+      - SERVER_PORT=9002
+      - MANAGEMENT_SERVER_PORT=9102
+      - LOKI_URI=http://loki_diploma_project:3100/loki/api/v1/push
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo_diploma_project:9411
+    depends_on:
+      - rabbitmq
+    expose:
+      - "9002"
+    ports:
+      - "9002:9002"
+      - "9102:9102"
+
+#  ## User-Service Docker Compose Config
+#  user-service:
+#    container_name: user-service
+#    image: ghcr.io/nullchefo/diploma-project-user-service:0.0.1-SNAPSHOT
+#    environment:
+#      # when specify profile "docker" that means to get the application-docker.yml
+#      # if it was SPRING_PROFILES_ACTIVE=prod it will pull application-prod.yml
+#      # - SPRING_PROFILES_ACTIVE=docker
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_diploma_project:5432/project
+#      - SPRING_DATASOURCE_USERNAME=postgres
+#      - SPRING_DATASOURCE_PASSWORD=rootpassword
+#      - SPRING_RABBITMQ_ADDRESSES=rabbitmq_diploma_project
+#      - SPRING_RABBITMQ_PORT=15672
+#      - SPRING_RABBITMQ_USERNAME=user
+#      - SPRING_RABBITMQ_PASSWORD=password
+#      - SERVER_PORT=9003
+#      - LOKI_URI=http://loki_diploma_project:3100/loki/api/v1/push
+#      - MANAGEMENT_SERVER_PORT=9103
+#      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo_diploma_project:9411
+#    depends_on:
+#      - rabbitmq
+#      # TODO remove
+#    expose:
+#      - "9003"
+#    ports:
+#      - "9003:9003"
+#      - "9103:9103"
+
+#  ## Mail-Process-Service Docker Compose Config
+#  mail-process-service:
+#    container_name: mail-process-service
+#    image: ghcr.io/nullchefo/diploma-project-mail-process-service:0.0.1-SNAPSHOT
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_diploma_project:5432/project
+#      - SPRING_DATASOURCE_USERNAME=postgres
+#      - SPRING_DATASOURCE_PASSWORD=rootpassword
+#      - SPRING_RABBITMQ_ADDRESSES=rabbitmq_diploma_project
+#      - SPRING_RABBITMQ_PORT=15672
+#      - SPRING_RABBITMQ_USERNAME=user
+#      - SPRING_RABBITMQ_PASSWORD=password
+#      - SERVER_PORT=9004
+#      - MANAGEMENT_SERVER_PORT=9104
+#      - LOKI_URI=http://loki_diploma_project:3100/loki/api/v1/push
+#      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo_diploma_project:9411
+#      #    depends_on:
+#      #      - rabbitmq
+#      # TODO remove
+#    expose:
+#      - "9004"
+#    ports:
+#      - "9004:9004"
+#      - "9104:9104"
+
+
+  ## Mail-Send-Service Docker Compose Config
+  mail-send-service:
+    container_name: mail-send-service
+    image: ghcr.io/nullchefo/diploma-project-mail-send-service:0.0.1-SNAPSHOT
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_diploma_project:5432/project
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - SPRING_RABBITMQ_ADDRESSES=rabbitmq_diploma_project
+      - SPRING_RABBITMQ_PORT=15672
+      - SPRING_RABBITMQ_USERNAME=user
+      - SPRING_RABBITMQ_PASSWORD=password
+      - MANAGEMENT_SERVER_PORT=9105
+      - SPRING.MAIL.HOST=smtp.gmail.com
+      - SPRING.MAIL.PORT=587
+      # TODO add username; =example@gmail.com
+      - SPRING.MAIL.USERNAME=
+      # TODO add password; exampleGmailPassword
+      - SPRING.MAIL.PASSWORD=
+      - SPRING.MAIL.properties.mail.smtp.auth=true
+      - SPRING.MAIL.properties.mail.smtp.starttls.enable=true
+      - SPRING.MAIL.defaultEncoding=UTF-8
+      - mail.smtp.ssl.trust=smtp.gmail.com
+      - spring.mail.properties.mail.smtp.ssl.protocols=TLSv1.2
+      - SERVER_PORT=9005
+      - LOKI_URI=http://loki_diploma_project:3100/loki/api/v1/push
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo_diploma_project:9411
+    # depends_on:
+    #   - rabbitmq
+    ports:
+      - "9005:9005"
+      - "9105:9105"
+      # TODO remove 9005
+    expose:
+      - "9005"
+      - "587"
+      - "465"
+
+
+  ## Social-Media-Service Docker Compose Config
+  socail-media-service:
+    container_name: socail-media-service
+    image: ghcr.io/nullchefo/diploma-project-social-media-service:0.0.1-SNAPSHOT
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql_diploma_project://postgres_diploma_project:5432/project
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - SPRING_RABBITMQ_ADDRESSES=rabbitmq_diploma_project
+      - SPRING_RABBITMQ_PORT=15672
+      - SPRING_RABBITMQ_USERNAME=user
+      - SPRING_RABBITMQ_PASSWORD=password
+      - SERVER_PORT=9006
+      - MANAGEMENT_SERVER_PORT=9106
+      - LOKI_URI=http://loki_diploma_project:3100/loki/api/v1/push
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo_diploma_project:9411
+    depends_on:
+      - rabbitmq
+    # TODO remove
+    expose:
+      - "9006"
+    ports:
+      - "9006:9006"
+      - "9106:9106"
+
+
+  ## Social-Media-Service Docker Compose Config
+  front-end-service:
+    container_name: front-end-service
+    image: ghcr.io/nullchefo/diploma-project-front-end:latest
+    #    environment:
+    depends_on:
+      - rabbitmq
+    # TODO remove
+    expose:
+      - "9999"
+    ports:
+      - "9999:80"
+
+# Archived
+
+#  ## Auth-History-Service Docker Compose Config
+#  auth-service:
+#    container_name: auth-service
+#    image: docker.io/nullchefo/auth-service
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/project
+#      - SPRING_DATASOURCE_USERNAME=postgres
+#      - SPRING_DATASOURCE_PASSWORD=rootpassword
+#      - SPRING_RABBITMQ_ADDRESSES=rabbitmq
+#      - SPRING_RABBITMQ_PORT=15672
+#      - SPRING_RABBITMQ_USERNAME=user
+#      - SPRING_RABBITMQ_PASSWORD=password
+#      - SERVER_PORT=9002
+#      - LOKI_URI=http://loki:3100/loki/api/v1/push
+#      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo:9411
+#    depends_on:
+#      - rabbitmq
+#    ports:
+#      - "9002:9002"
+
+#  ## Car-History-Service Docker Compose Config
+#  car-history-service:
+#    container_name: car-history-service
+#    image: ghcr.io/nullchefo/diploma-project-car-history-service:0.0.1-SNAPSHOT
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/project
+#      - SPRING_DATASOURCE_USERNAME=postgres
+#      - SPRING_DATASOURCE_PASSWORD=rootpassword
+#      - SPRING_RABBITMQ_ADDRESSES=rabbitmq
+#      - SPRING_RABBITMQ_PORT=15672
+#      - SPRING_RABBITMQ_USERNAME=user
+#      - SPRING_RABBITMQ_PASSWORD=password
+#      - SERVER_PORT=9006
+#      - LOKI_URI=http://loki:3100/loki/api/v1/push
+#      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://tempo:9411
+#    depends_on:
+#      - rabbitmq
+#    ports:
+#      - "9006:9006"

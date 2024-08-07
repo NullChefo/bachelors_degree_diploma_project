@@ -1,0 +1,15 @@
+<div id="posts">
+  <div *ngIf="posts.length > 0">
+
+    <div *ngFor="let post of posts">
+      <app-post-item (deleteClicked)="onDelete($event)" [post]="post"></app-post-item>
+    </div>
+
+  </div>
+
+  <div *ngIf="posts.length < 0">
+    <p> Get more posts by joining in group or connecting with people </p>
+  </div>
+
+
+</div>

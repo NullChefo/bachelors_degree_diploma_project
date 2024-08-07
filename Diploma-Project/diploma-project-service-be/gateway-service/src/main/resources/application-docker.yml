@@ -1,0 +1,73 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    kubernetes:
+      loadbalancer:
+        enabled: false
+      enabled: false
+    gateway:
+      routes:
+        - id: user-service-route
+          # lb://user-service:8082 || lb://user-service
+          uri: http://user-service
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - RewritePath=/api/user/(?<segment>.*), /user/$\{segment}
+
+        - id: auth-service-route
+          # lb://auth-service:8086 || lb://auth-service
+          uri: http://auth-service
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - RewritePath=/api/auth/(?<segment>.*), /auth/$\{segment}
+
+        - id: mail-process-service-route
+          # lb://mail-process-service:8084 || lb://mail-process-service
+          uri: http://mail-process-service
+          predicates:
+            - Path=/api/mail/**
+          filters:
+            - RewritePath=/api/mail/(?<segment>.*), /mail/$\{segment}
+
+        - id: car-history-service-route
+          # lb://car-history-service:8085 || lb://car-history-service
+          uri: http://car-history-service
+          predicates:
+            - Path=/api/car/**
+          filters:
+            - RewritePath=/api/car/(?<segment>.*), /$\{segment}
+#            - AuthenticationFactory
+      globalcors:
+        corsConfigurations:
+          '[api/auth/v1/**]':
+            allowedOrigins:
+              - http://localhost:4200
+              - http://127.0.0.1:4200
+              - https://mail.nullchefo.com
+              - https://nullchefo.com
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS

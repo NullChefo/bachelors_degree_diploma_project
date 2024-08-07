@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: authorization
+  labels:
+    app: authorization
+    spring-boot: "true"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "9100"
+    prometheus.io/scrape: "true"
+spec:
+  selector:
+    app: authorization
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9000
+      targetPort: 9000
+    - name: actuator
+      port: 9100
+      targetPort: 9100
+

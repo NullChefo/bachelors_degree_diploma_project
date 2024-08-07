@@ -1,0 +1,4 @@
+<div *ngFor="let attachment of attachments">
+
+  <app-media-item (deleteClicked)="onDelete($event)" [attachment]="attachment"></app-media-item>
+</div>

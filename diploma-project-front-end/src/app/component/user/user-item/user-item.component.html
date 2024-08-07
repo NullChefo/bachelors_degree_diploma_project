@@ -1,0 +1,16 @@
+<div [id]="user.id" class=" p-2  ">
+  <a class="flex items-center" routerLink="/user/{{user.username}}">
+
+
+    <ng-container *ngIf="user.avatarURL">
+      <img [src]="user.avatarURL" class=" rounded-full border w-[10%] h-[10%]">
+    </ng-container>
+
+    <ng-container *ngIf="!user.avatarURL">
+      <img class=" rounded-full border w-[10%] h-[10%]" src="./assets/default_user.png">
+    </ng-container>
+
+    <p>{{user.firstName}} {{user.lastName}} </p>
+
+  </a>
+</div>

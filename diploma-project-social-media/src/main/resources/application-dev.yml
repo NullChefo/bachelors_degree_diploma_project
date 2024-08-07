@@ -1,0 +1,145 @@
+server:
+  port: 8092
+  shutdown: graceful
+  error:
+    include-message: always
+    # TODO make it false
+    include-exception: true
+    include-stacktrace: always
+    whitelabel:
+      enabled: on
+
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      # TODO
+      password:
+      username:
+  application:
+    name: social-media-service
+  devtools:
+    livereload:
+      port: 35730
+  #  output.ansi.enabled: ALWAYS
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/diploma-project
+    username: postgres
+    password: rootpassword
+
+    # Connection Pool
+    hikari:
+      auto-commit: true
+      max-lifetime: 1000
+      maximum-pool-size: 100
+      minimum-idle: 10
+      connection-timeout: 20000
+
+  rabbitmq:
+    addresses: 127.0.0.1
+    port: 15672
+    username: user
+    password: password
+
+  jpa:
+    hibernate:
+      # TODO make validate
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  flyway:
+    # TODO make true
+    enabled: false
+
+  # TODO!!! fix
+  main:
+    allow-circular-references: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTHORIZATION_SERVER_URL:http://authorization:9000}
+          jwk-set-uri: ${AUTHORIZATION_SERVER_URL:http://authorization:9000}/oauth2/jwks
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+rabbitmq:
+  queue:
+    name: mail-send-queue
+  exchange:
+    name: mail-send-exchange
+  routing:
+    key: mail-send-routing-key
+
+frontEnd:
+  # TODO change for prod
+  url: http://localhost:4200
+
+env:
+  prod: false
+
+#springdoc:
+#  api-docs:
+#    path: "/social-media/swagger/docs/api"
+#  swagger-ui:
+#    path: "/social-media/swagger/swagger-ui.html"
+#    oauth:
+#      use-pkce-with-authorization-code-grant: true
+#      client-id: swagger-client
+#      scopes:
+#        - openid
+#        - social_media.read
+#        - social_media.write
+#    oauth2-redirect-url: http://127.0.0.1:8092/social-media/swagger/swagger-ui/index.html
+
+
+springdoc:
+  api-docs:
+    path: /v1/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+
+aws:
+  access:
+    key:
+      id: ${AWS_ACCESS_KEY:access_key}
+
+  secret:
+    access:
+      key: ${AWS_SECRET_KEY:secret_key}
+
+  s3:
+    region: ${AWS_REGION:aws_region}
+    bucket:
+      name: ${AWS_BUCKET_NAME:aws_bucket}
+    public-path: ${AWS_S3_PUBLIC_PATH:https://diploma-project-aws-bucket.s3.eu-central-1.amazonaws.com}
+
+
+address:
+  frontEnd:
+    successfullyLogOut: https://diploma-project.nullchefo.com/auth/logged-out
+    thanksForRegistrationURL: https://diploma-project.nullchefo.com/auth/verifyRegistration
+    validateRegistrationURL: ${FE_ADDRESS:https://diploma-project.nullchefo.com}/auth/verifyRegistration
+    passwordResetURL: ${FE_ADDRESS:https://diploma-project.nullchefo.com}/auth/savePassword
+  backEnd:
+    userServerRegisterURL: http://user:8082/user/v1/register
+
+services-list:
+  authorization-service: "http://localhost:9000"
+  mail-process-service: "http://localhost:9004"
+  mail-send-service: "http://localhost:9005"

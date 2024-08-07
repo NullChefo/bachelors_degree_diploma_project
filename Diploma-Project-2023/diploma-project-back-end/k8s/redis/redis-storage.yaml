@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolume # Create PV
+metadata:
+  name: redis-volume # Sets PV name
+  labels:
+    type: local # Sets PV's type
+    app: redis
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi # Sets PV's size
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/data/redis" # Sets PV's host path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim # Create PVC
+metadata:
+  name: redis-volume-claim # Sets PVC's name
+  labels:
+    app: redis # Defines app to create PVC for
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi # Sets PVC's size

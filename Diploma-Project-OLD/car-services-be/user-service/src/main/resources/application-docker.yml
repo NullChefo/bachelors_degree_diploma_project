@@ -1,0 +1,64 @@
+server:
+  port: 8082
+  shutdown: graceful
+  error:
+    include-message: always
+    include-exception: true # TODO make it false
+
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:mysql://mysql-db:3306/diploma_project?createDatabaseIfNotExist=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true
+    username: user
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  rabbitmq:
+  #  addresses: 127.0.0.1
+    port: 15672
+    username: user
+    password: password
+   # host: 127.0.0.1
+    host: rabbitmq
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      # TODO read more https://www.springcloud.io/post/2022-05/spring-cloud-kubernetes/#gsc.tab=0
+  cloud:
+    kubernetes:
+      loadbalancer:
+        enabled: false
+        mode: service
+      enabled: false
+    loadbalancer:
+      ribbon:
+        enabled: false
+management:
+  endpoints:
+    web:
+      exposure:
+        # TODO *
+        include: prometheus
+
+rabbitmq:
+  queue:
+    name: mail-process-queue
+  exchange:
+    name: mail-process-exchange
+  routing:
+    key: mail-process-routing-key
+
+frontEnd:
+  # TODO change for prod
+  url: http://localhost:4200
+
+env:
+  prod: false
+
+
+services-list:
+  mail-send-service: "http://mail-send-service"
+  mail-process-service: "http://mail-porcess-service"
+  car-history-service: "http://car-history-service"
+  auth-service-service: "http://auth-service"

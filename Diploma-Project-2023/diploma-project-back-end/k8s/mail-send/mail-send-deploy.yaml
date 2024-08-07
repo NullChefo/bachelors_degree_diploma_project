@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mail-send
+  labels:
+    app: mail-send
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mail-send
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+  template:
+    metadata:
+      labels:
+        app: mail-send
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8183"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+        - name: mail-send
+          image: ghcr.io/nullchefo/diploma-project-mail-send-service:0.0.1-SNAPSHOT
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "256Mi"
+            limits:
+              memory: "512Mi"
+          ports:
+            - containerPort: 8083
+            - containerPort: 8183
+          envFrom:
+            - configMapRef:
+                name: mail-send-configmap
+            - secretRef:
+                name: mail-send-secret
+            - secretRef:
+                name: mail-send-credentials-secret

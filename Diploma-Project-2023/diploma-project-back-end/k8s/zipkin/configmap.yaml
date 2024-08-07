@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zipkin-configmap
+  namespace: monitoring
+data:
+  PLACEHOLDER: "nothing"

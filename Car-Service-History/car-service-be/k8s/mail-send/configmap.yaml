@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mail-send-configmap
+data:
+
+  SPRING_PROFILES_ACTIVE: kubernetes
+
+  FE_ADDRESS: "http://localhost:4200"
+
+
+  SPRING.MAIL.HOST: smtp.gmail.com
+  SPRING.MAIL.PORT: "587"
+
+  SPRING.MAIL.properties.mail.smtp.auth: "TRUE"
+  SPRING.MAIL.properties.mail.smtp.starttls.enable: "TRUE"
+  SPRING.MAIL.defaultEncoding: UTF-8
+  mail.smtp.ssl.trust: smtp.gmail.com
+  spring.mail.properties.mail.smtp.ssl.protocols: "TLSv1.2"
+
+
+  SERVER_PORT: "8083"
+  SPRING_ZIPKIN_BASE-URL: "http://zipkin:9411"

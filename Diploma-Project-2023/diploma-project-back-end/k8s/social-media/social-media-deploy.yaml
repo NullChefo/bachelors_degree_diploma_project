@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: social-media
+  labels:
+    app: social-media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: social-media
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 10
+  template:
+    metadata:
+      labels:
+        app: social-media
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8192"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+        - name: social-media
+          image: ghcr.io/nullchefo/diploma-project-social-media-service:0.0.1-SNAPSHOT
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "256Mi"
+            #             cpu: "1000m"
+            limits:
+              # after 1.7GB the GC is much better
+              memory: "2048Mi"
+          #             cpu: "2000m"
+          ports:
+            - containerPort: 8092
+            - containerPort: 8192
+          envFrom:
+            - configMapRef:
+                name: social-media-configmap
+            - secretRef:
+                name: social-media-secret
+            - secretRef:
+                name: aws-credentials

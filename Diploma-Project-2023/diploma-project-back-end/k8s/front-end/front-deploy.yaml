@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-end
+  labels:
+    app: front-end
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: front-end
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 10
+  template:
+    metadata:
+      labels:
+        app: front-end
+    spec:
+      containers:
+        - name: front-end
+          image: ghcr.io/nullchefo/diploma-project-front-end:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80

@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: car-history
+  labels:
+    app: car-history
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: car-history
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+  template:
+    metadata:
+      labels:
+        app: car-history
+    spec:
+      containers:
+        - name: car-history
+          image: docker.io/nullchefo/car-history-service:latest
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "1000m"
+            limits:
+              # after 1.7GB the GC is much better
+              # TODO add the JAVA GC talk link
+              memory: "1843Mi"
+              cpu: "2000m"
+          ports:
+            - containerPort: 8085
+          envFrom:
+            - configMapRef:
+                name: car-history-configmap
+            - secretRef:
+                name: car-history-secret

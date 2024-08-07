@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mail-process
+  labels:
+    app: mail-process
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mail-process
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+  template:
+    metadata:
+      labels:
+        app: mail-process
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8184"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+        - name: mail-process
+          image: ghcr.io/nullchefo/diploma-project-mail-process-service:0.0.1-SNAPSHOT
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "256Mi"
+            limits:
+              memory: "512Mi"
+          ports:
+            - containerPort: 8084
+            - containerPort: 8184
+          envFrom:
+            - configMapRef:
+                name: mail-process-configmap
+            - secretRef:
+                name: mail-process-secret

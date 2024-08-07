@@ -1,0 +1,50 @@
+
+#Multi stage docker file
+
+# FROM maven:3-eclipse-temurin-19 AS build
+
+# ENV APP_HOME=/root/dev/app/
+
+# COPY src $APP_HOME/src
+
+# COPY pom.xml $APP_HOME/
+
+# RUN mvn dependency:go-offline -f $APP_HOME/pom.xml clean package -DskipTests
+
+# --------------------------
+
+FROM maven:3-eclipse-temurin-19 as build
+
+ENV HOME=/usr/app
+RUN mkdir -p $HOME
+WORKDIR $HOME
+
+ADD pom.xml $HOME
+ADD core/pom.xml $HOME/core/pom.xml
+ADD runner/pom.xml $HOME/runner/pom.xml
+
+RUN mvn -pl core verify --fail-never
+ADD core $HOME/core
+RUN mvn -pl core install
+RUN mvn -pl runner verify --fail-never
+ADD runner $HOME/runner
+
+
+RUN mvn -pl core,runner package -DskipTests
+
+
+FROM ghcr.io/graalvm/graalvm-ce:22.3.0 AS build-aot
+
+RUN ln -s /opt/graalvm-ce-19.2.0 /opt/graalvm
+ENV GRAALVM_HOME=/opt/graalvm
+ENV JAVA_HOME=/opt/graalvm
+ENV PATH=${GRAALVM_HOME}/bin:${PATH}
+RUN gu install native-image
+COPY --from=build '/root/dev/app/target/car-history-service-0.0.1-SNAPSHOT.jar' /app.jar
+RUN native-image --no-server -jar app.jar com.stefan.carservcehistorybackend.CarServiceHistoryBackendApplication
+#ENTRYPOINT ["./app"]
+
+FROM frolvlad/alpine-glibc
+EXPOSE 8082
+COPY --from=build-aot /app .
+ENTRYPOINT ["./app"]

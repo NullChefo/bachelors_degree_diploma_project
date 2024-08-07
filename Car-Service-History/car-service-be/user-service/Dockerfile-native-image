@@ -1,0 +1,16 @@
+
+FROM ghcr.io/graalvm/graalvm-ce:22.3.0 AS build
+
+RUN gu install native-image
+
+RUN mkdir /build
+
+ COPY ./target/user-service-0.0.1-SNAPSHOT.jar /build/app.jar
+
+RUN cd /build && native-image --static -jar app.jar
+
+
+FROM scratch
+
+RUN COPY --from=build /build/app /opt/app
+CMD ["/opt/app"]

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: car-history
+  labels:
+    app: car-history
+    spring-boot: "true"
+spec:
+  selector:
+    app: car-history
+  type: ClusterIP
+  ports:
+    - port: 8085
+      targetPort: 8085
+#      protocol: TCP

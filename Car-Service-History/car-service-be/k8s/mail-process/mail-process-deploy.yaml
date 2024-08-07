@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mail-process
+  labels:
+    app: mail-process
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mail-process
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+  template:
+    metadata:
+      labels:
+        app: mail-process
+    spec:
+      containers:
+        - name: mail-process
+          image: docker.io/nullchefo/mail-process-service:latest
+          imagePullPolicy: Always
+#          resources:
+#            requests:
+#              memory: "32Mi"
+#              cpu: "100m"
+#            limits:
+#              memory: "128Mi"
+#              cpu: "1000m"
+          ports:
+            - containerPort: 8084
+          envFrom:
+            - configMapRef:
+                name: mail-process-configmap
+            - secretRef:
+                name: mail-process-secret

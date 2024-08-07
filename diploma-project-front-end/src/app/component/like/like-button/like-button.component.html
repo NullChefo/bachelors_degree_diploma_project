@@ -1,0 +1,19 @@
+<ng-container>
+
+  <div class="flex space-x-1 text-xl">
+    <button (click)="like()">
+      <ng-container *ngIf="isLiked">
+        <fa-icon [icon]="faHeartFilled"
+                 class=" text-red-700"></fa-icon>
+      </ng-container>
+      <ng-container *ngIf="!isLiked">
+        <fa-icon [icon]="faHeartEmpty"
+                 class=" text-red-700"></fa-icon>
+      </ng-container>
+    </button>
+    <div>
+      <button (click)="openLikes('0ms', '0ms')" mat-raised-button>{{this.likeCount}}</button>
+    </div>
+  </div>
+
+</ng-container>

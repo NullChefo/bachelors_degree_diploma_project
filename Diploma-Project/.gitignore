@@ -1,0 +1,12 @@
+./diploma-project-service-fe/docker-compose-*.yml
+
+./diploma-project-service-be/k8s/mail-send/secret-mail-credentials.yaml
+/diploma-project-service-be/k8s/mail-send/secret-mail-credentials.yaml
+
+
+/Get_them_out/
+.DS_Store
+
+*/.DS_Store
+.idea
+/ui/

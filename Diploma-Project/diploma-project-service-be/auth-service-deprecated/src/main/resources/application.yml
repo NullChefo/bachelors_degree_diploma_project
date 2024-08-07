@@ -1,0 +1,75 @@
+server:
+  port: 8086
+  shutdown: graceful
+  error:
+    include-message: always
+    include-exception: true # TODO make it false
+
+spring:
+  application:
+    name: auth-service
+  devtools:
+    livereload:
+      port: 35730
+
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/project
+    username: postgres
+    password: rootpassword
+  rabbitmq:
+    addresses: 127.0.0.1
+    port: 15672
+    username: user
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+
+  flyway:
+    enabled: false
+
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+rabbitmq:
+  queue:
+    name: mail-process-queue
+  exchange:
+    name: mail-process-exchange
+  routing:
+    key: mail-process-routing-key
+
+
+auth:
+  accessTokenSecret: exampleTokenSecret
+  refreshTokenSecret: exampleRefreshTokenSecret
+  accessTokenDurationMinutes: 600
+  refreshTokenDurationMinutes: 1200
+  accessTokenCookieName: accessToken
+  refreshTokenCookieName: refreshToken
+
+
+frontEnd:
+  # TODO change for prod
+  url: http://localhost:4200/
+
+project:
+  name: "Diploma Project"
+
+env:
+  prod: false

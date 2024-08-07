@@ -1,0 +1,17 @@
+<div>
+  <p>{{group.id}}</p>
+  <p>{{group.avatarURL}}</p>
+  <p>{{group.name}}</p>
+  <p>{{group.owner}}</p>
+
+  <p>{{group.createdAt}}</p>
+  <p>{{group.description}}</p>
+  <p>{{group.memberCount}}</p>
+
+  <p>{{group.members}}</p>     <!-- TODO user list  -->
+
+
+  <app-media-list [attachments]="group.attachments"></app-media-list>
+
+
+</div>

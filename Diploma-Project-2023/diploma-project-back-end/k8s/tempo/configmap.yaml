@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tempo-config
+  namespace: monitoring
+data:
+  tempo.yml: |
+    server:
+      http_listen_port: 3200
+    
+    distributor:
+      receivers: # this configuration will listen on all ports and protocols that tempo is capable of.
+        jaeger: # the receives all come from the OpenTelemetry collector.  more configuration information can
+          protocols: # be found there: https://github.com/open-telemetry/opentelemetry-collector/tree/main/receiver
+            thrift_http:                   #
+            grpc:                          # for a production deployment you should only enable the receivers you need!
+            thrift_binary:
+            thrift_compact:
+        zipkin:
+        otlp:
+          protocols:
+            http:
+            grpc:
+        opencensus:
+    
+    
+    ingester:
+      trace_idle_period: 10s
+      max_block_bytes: 1_000_000
+      max_block_duration: 5m
+
+    compactor:
+      compaction:
+        compaction_window: 1h              # blocks in this time window will be compacted together
+        max_block_bytes: 100_000_000       # maximum size of compacted blocks
+        block_retention: 1h
+        compacted_block_retention: 10m
+    
+    storage:
+      trace:
+        backend: local
+        local:
+          path: /tmp/tempo/blocks
