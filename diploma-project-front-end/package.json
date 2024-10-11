@@ -30,7 +30,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.2.1",
     "ngx-cookie-service": "^15.0.0",
     "ngx-infinite-scroll": "^15.0.0",
-    "ngx-markdown": "^15.1.2",
+    "ngx-markdown": "^18.1.0",
     "pkce-challenge": "^3.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
